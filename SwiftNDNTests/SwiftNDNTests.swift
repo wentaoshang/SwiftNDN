@@ -34,10 +34,16 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(b1 == expectedContent1)
         XCTAssertEqual(b1.size, expectedContent1.count)
         
+        var b1b = Buffer(buffer: expectedContent1)
+        XCTAssert(b1b === b1)
+        XCTAssert(b1b == b1)
+        
         let b1Content = b1.readByteArray(b1.size)
         XCTAssert(b1Content != nil)
         XCTAssert(b1Content!.array == expectedContent1)
         XCTAssertEqual(b1Content!.length, expectedContent1.count)
+        XCTAssert(!(b1b === b1))
+        XCTAssert(b1b == b1)
         
         b1 = Buffer(capacity: 1000)
         b1.writeVarNumber(0x01)
@@ -118,42 +124,93 @@ class SwiftNDNTests: XCTestCase {
     }
     
     func testName() {
-        // Test for Name & NameComponent
+        // Test for Name.Component
         
-        let nameUrl = "/a/b/c/d/%00%01"
         let c0 = Name.Component(bytes: [0x61])
+        XCTAssertEqual(c0.toUri(), "a")
         let c1 = Name.Component(bytes: [0x62])
         let c2 = Name.Component(bytes: [0x63])
         let c3 = Name.Component(bytes: [0x64])
         let c4 = Name.Component(bytes: [0x00, 0x01])
+        XCTAssertEqual(c4.toUri(), "%00%01")
+        
+        let c0s = Name.Component(url: "a")
+        XCTAssert(c0s != nil)
+        XCTAssert(c0s! == c0)
+        
+        let c4s = Name.Component(url: "%00%01")
+        XCTAssert(c4s != nil)
+        XCTAssert(c4s! == c4)
+        
+        let c5 = Name.Component(url: "")
+        XCTAssert(c5 == nil)
+        let c6 = Name.Component(url: "/")
+        XCTAssert(c6 == nil)
+        
+        let a = Name.Component(url: "a")
+        let ab = Name.Component(url: "ab")
+        let aaa = Name.Component(url: "aaa")
+        let aac = Name.Component(url: "aac")
+        XCTAssert(a! < ab!)
+        XCTAssert(ab! < aaa!)
+        XCTAssert(aaa! < aac!)
+        XCTAssert(aac! > ab!)
+        
+        // Test for Name
+        let nameUrl = "/a/b/c/d/%00%01"
         let n0 = Name()
         n0.appendComponent(c0)
         n0.appendComponent(c1)
         n0.appendComponent(c2)
         n0.appendComponent(c3)
         n0.appendComponent(c4)
+        XCTAssertEqual(n0.toUri(), nameUrl)
+        
         let n0Encode = n0.wireEncode()
         XCTAssert(n0Encode != nil)
-
         let (n0blk, _) = Tlv.Block.wireDecode(n0Encode!)
         XCTAssert(n0blk != nil)
         let n1 = Name(block: n0blk!)
         XCTAssert(n1 != nil)
-        
-        //let emptyUrl = NSURL(string: "/")
-        //println(emptyUrl?)
-        //let url = NSURL(string: "/a/b/c/d/%00%01//e")
-        //println(url?)
-        //println(url?.absoluteString)
-        //println(url?.pathComponents)
-        //println(url?.pathComponents?.count)
+        XCTAssert(n0 == n1!)
         
         let n2 = Name(url: nameUrl)
         XCTAssert(n2 != nil)
         let n2Encode = n2!.wireEncode()
         XCTAssert(n2Encode != nil)
         XCTAssert(n0.wireEncode()! == n2Encode!)
+        XCTAssert(n0 == n2!)
+        XCTAssert(n1! == n2!)
+        
+        let _a = Name(url: "/a")!
+        let _a_b = Name(url: "/a/b")!
+        let _a_a_a = Name(url: "/a/a/a")!
+        let _a_a_c = Name(url: "/a/a/c")!
+        XCTAssert(_a < _a_b)
+        XCTAssert(_a_b > _a_a_a)
+        XCTAssert(_a_a_a < _a_a_c)
+        
 
+        // NSURL usages
+//        let url0 = NSURL(string: "%00%01")
+//        println(url0?.absoluteString)
+//        println(url0?.pathComponents)
+//        //println(url0?.lastPathComponent?.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding))
+//        let url1 = NSURL(string: "")
+//        println(url1?.absoluteString)
+//        println(url1?.pathComponents)
+//        //println(url1?.lastPathComponent?.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding))
+//        let url2 = NSURL(string: "/")
+//        println(url2?.absoluteString)
+//        println(url2?.pathComponents)
+//        let url3 = NSURL(string: "a")
+//        println(url3?.absoluteString)
+//        println(url3?.pathComponents)
+//        let url4 = NSURL(string: "/a/b/c/d/%00%01//e")
+//        println(url4?)
+//        println(url4?.absoluteString)
+//        println(url4?.pathComponents)
+//        println(url4?.pathComponents?.count)
     }
     
 //    func testPerformanceExample() {

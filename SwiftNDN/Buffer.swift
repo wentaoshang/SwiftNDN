@@ -215,6 +215,10 @@ public class Buffer: Printable {
 }
 
 public func == (lhs: Buffer, rhs: Buffer) -> Bool {
+    return lhs.buffer == rhs.buffer
+}
+
+public func === (lhs: Buffer, rhs: Buffer) -> Bool {
     return lhs.buffer == rhs.buffer && lhs.head == rhs.head
 }
 

@@ -197,3 +197,31 @@ public class Tlv: Printable {
         return self.block?.wireEncode()
     }
 }
+
+public func == (lhs: Tlv.Block, rhs: Tlv.Block) -> Bool {
+    if lhs.type != rhs.type {
+        return false
+    }
+    
+    switch (lhs.value, rhs.value) {
+    case (Tlv.Value.RawBytes(let l), Tlv.Value.RawBytes(let r)):
+        if l != r {
+            return false
+        }
+    case (Tlv.Value.Blocks(let l), Tlv.Value.Blocks(let r)):
+        if l.count != r.count {
+            return false
+        }
+        for i in 0..<l.count {
+            if !(l[i] == r[i]) {
+                return false
+            }
+        }
+    default: return false
+    }
+    return true
+}
+
+public func == (lhs: Tlv, rhs: Tlv) -> Bool {
+    return false
+}
