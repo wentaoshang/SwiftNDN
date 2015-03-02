@@ -15,6 +15,17 @@ public class Tlv: Printable {
         case Data = 6
         case Name = 7
         case NameComponent = 8
+        case Selectors = 9
+        case Nonce = 10
+        case Scope = 11
+        case InterestLifetime = 12
+        case MinSuffixComponent = 13
+        case MaxSuffixComponent = 14
+        case PublisherPublicKeyLocator = 15
+        case Exclude = 16
+        case ChildSelector = 17
+        case MustBeFresh = 18
+        case Any = 19
         case ImplicitSha256DigestComponent = 32
         
         public var description: String {
@@ -24,6 +35,17 @@ public class Tlv: Printable {
                 case .Data: return "Data"
                 case .Name: return "Name"
                 case .NameComponent: return "NameComponent"
+                case .Selectors: return "Selectors"
+                case .Nonce: return "Nonce"
+                case .Scope: return "Scope"
+                case .InterestLifetime: return "InterestLifetime"
+                case .MinSuffixComponent: return "MinSuffixComponent"
+                case .MaxSuffixComponent: return "MaxSuffixComponent"
+                case .PublisherPublicKeyLocator: return "PublisherPublicKeyLocator"
+                case .Exclude: return "Exclude"
+                case .ChildSelector: return "ChildSelector"
+                case .MustBeFresh: return "MustBeFresh"
+                case .Any: return "Any"
                 case .ImplicitSha256DigestComponent: return "DigestComponent"
                 }
             }
@@ -35,6 +57,17 @@ public class Tlv: Printable {
             case .Data: return true
             case .Name: return true
             case .NameComponent: return false
+            case .Selectors: return true
+            case .Nonce: return false
+            case .Scope: return false
+            case .InterestLifetime: return false
+            case .MinSuffixComponent: return false
+            case .MaxSuffixComponent: return false
+            case .PublisherPublicKeyLocator: return false
+            case .Exclude: return true
+            case .ChildSelector: return false
+            case .MustBeFresh: return false
+            case .Any: return false
             case .ImplicitSha256DigestComponent: return false
             }
         }
@@ -114,11 +147,8 @@ public class Tlv: Printable {
             }
         }
         
-        public func wireEncode() -> Buffer? {
+        public func wireEncode() -> Buffer {
             let len = self.length
-            if len == 0 {
-                return nil
-            }
             let totalLength = len + Buffer.getVarNumberEncodedLength(len)
                 + Buffer.getVarNumberEncodedLength(self.type.rawValue)
             var buf = Buffer(capacity: Int(totalLength))

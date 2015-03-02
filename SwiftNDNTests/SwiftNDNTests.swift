@@ -190,6 +190,13 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(_a_b > _a_a_a)
         XCTAssert(_a_a_a < _a_a_c)
         
+        let emptyName1 = Name()
+        XCTAssertEqual(emptyName1.toUri(), "/")
+        let emptyEncode = emptyName1.wireEncode()
+        XCTAssert(emptyEncode != nil)
+        let emptyName2 = Name.wireDecode(emptyEncode!)
+        XCTAssert(emptyName2 != nil)
+        XCTAssert(emptyName1 == emptyName2!)
 
         // NSURL usages
 //        let url0 = NSURL(string: "%00%01")
@@ -211,6 +218,16 @@ class SwiftNDNTests: XCTestCase {
 //        println(url4?.absoluteString)
 //        println(url4?.pathComponents)
 //        println(url4?.pathComponents?.count)
+    }
+    
+    func testInterest() {
+        var i0 = Interest()
+        let i0Encode = i0.wireEncode()
+        XCTAssert(i0Encode != nil)
+        var i1 = Interest.wireDecode(i0Encode!)
+        XCTAssert(i1 != nil)
+        XCTAssert(i0.name == i1!.name)
+        XCTAssert(i0.nonce == i1!.nonce)
     }
     
 //    func testPerformanceExample() {

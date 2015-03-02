@@ -13,6 +13,7 @@
 		37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEE1AA1558A0007BF12 /* Buffer.swift */; };
 		37725BF21AA1558A0007BF12 /* Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEF1AA1558A0007BF12 /* Name.swift */; };
 		37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BF01AA1558A0007BF12 /* Tlv.swift */; };
+		37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725C0A1AA28DAD0007BF12 /* Interest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 		37725BEE1AA1558A0007BF12 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
 		37725BEF1AA1558A0007BF12 /* Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Name.swift; sourceTree = "<group>"; };
 		37725BF01AA1558A0007BF12 /* Tlv.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tlv.swift; sourceTree = "<group>"; };
+		37725C0A1AA28DAD0007BF12 /* Interest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,10 +79,11 @@
 		37725BD41AA1556C0007BF12 /* SwiftNDN */ = {
 			isa = PBXGroup;
 			children = (
+				37725BD71AA1556C0007BF12 /* SwiftNDN.h */,
 				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
+				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
 				37725BEF1AA1558A0007BF12 /* Name.swift */,
 				37725BF01AA1558A0007BF12 /* Tlv.swift */,
-				37725BD71AA1556C0007BF12 /* SwiftNDN.h */,
 				37725BD51AA1556C0007BF12 /* Supporting Files */,
 			);
 			path = SwiftNDN;
@@ -221,6 +224,7 @@
 				37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */,
 				37725BF21AA1558A0007BF12 /* Name.swift in Sources */,
 				37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */,
+				37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,6 +413,7 @@
 				37725BEA1AA1556C0007BF12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		37725BEB1AA1556C0007BF12 /* Build configuration list for PBXNativeTarget "SwiftNDNTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +422,7 @@
 				37725BED1AA1556C0007BF12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

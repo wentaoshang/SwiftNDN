@@ -88,19 +88,15 @@ public class Name: Tlv {
     var components = [Component]()
     
     public override var block: Block? {
-        if components.count == 0 {
-            return nil
-        } else {
-            var blk = Block(type: TypeCode.Name)
-            for comp in self.components {
-                if let compBlock = comp.block {
-                    blk.appendBlock(compBlock)
-                } else {
-                    return nil
-                }
+        var blk = Block(type: TypeCode.Name)
+        for comp in self.components {
+            if let compBlock = comp.block {
+                blk.appendBlock(compBlock)
+            } else {
+                return nil
             }
-            return blk
         }
+        return blk
     }
     
     public var size: Int {
@@ -117,7 +113,7 @@ public class Name: Tlv {
 
     public init?(block: Block) {
         super.init()
-        if block.type != Tlv.TypeCode.Name {
+        if block.type != TypeCode.Name {
             return nil
         }
         switch block.value {
@@ -138,10 +134,6 @@ public class Name: Tlv {
     public init?(url: String) {
         super.init()
         if let comps = NSURL(string: url)?.pathComponents {
-            if comps.count <= 1 {
-                // Empty URL "/"
-                return nil
-            }
             for i in 1..<comps.count {
                 let string = comps[i] as NSString
                 let cStr = string.cStringUsingEncoding(NSASCIIStringEncoding)
@@ -198,6 +190,15 @@ public class Name: Tlv {
             return 1
         } else {
             return 0
+        }
+    }
+    
+    public class func wireDecode(buf: Buffer) -> Name? {
+        let (block, _) = Block.wireDecode(buf)
+        if let blk = block {
+            return Name(block: blk)
+        } else {
+            return nil
         }
     }
 }
