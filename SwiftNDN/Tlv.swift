@@ -147,13 +147,13 @@ public class Tlv: Printable {
             }
         }
         
-        public func wireEncode() -> Buffer {
+        public func wireEncode() -> [UInt8] {
             let len = self.length
             let totalLength = len + Buffer.getVarNumberEncodedLength(len)
                 + Buffer.getVarNumberEncodedLength(self.type.rawValue)
             var buf = Buffer(capacity: Int(totalLength))
             self.wireEncode(buf)
-            return buf
+            return buf.buffer
         }
         
         public func wireEncode(buf: Buffer) {
@@ -168,6 +168,11 @@ public class Tlv: Printable {
                     blk.wireEncode(buf)
                 }
             }
+        }
+        
+        public class func wireDecode(bytes: [UInt8]) -> (block: Block?, lengthRead: Int) {
+            let buf = Buffer(buffer: bytes)
+            return wireDecode(buf)
         }
         
         public class func wireDecode(buf: Buffer) -> (block: Block?, lengthRead: Int) {
@@ -209,6 +214,7 @@ public class Tlv: Printable {
             }
             return (nil, lengthRead)
         }
+        
     }
     
     public var block: Block? {
@@ -223,7 +229,7 @@ public class Tlv: Printable {
         }
     }
     
-    public func wireEncode() -> Buffer? {
+    public func wireEncode() -> [UInt8]? {
         return self.block?.wireEncode()
     }
 }

@@ -88,8 +88,8 @@ public class Interest: Tlv {
         }
     }
     
-    public class func wireDecode(buf: Buffer) -> Interest? {
-        let (block, _) = Block.wireDecode(buf)
+    public class func wireDecode(bytes: [UInt8]) -> Interest? {
+        let (block, _) = Block.wireDecode(bytes)
         if let blk = block {
             return Interest(block: blk)
         } else {

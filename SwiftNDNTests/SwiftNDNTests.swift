@@ -230,6 +230,87 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(i0.nonce == i1!.nonce)
     }
     
+    class TlvEchoClient: AsyncTransportDelegate {
+        
+        var openExpectation: XCTestExpectation?
+        var closeExpectation: XCTestExpectation?
+        var receiveName1Expectation: XCTestExpectation?
+        var receiveName2Expectation: XCTestExpectation?
+        var receiveName3Expectation: XCTestExpectation?
+
+        var name1Received = false
+        var name2Received = false
+        var name3Received = false
+        
+        var host = "127.0.0.1"
+        var port: UInt16 = 12345
+        var transport: AsyncTcpTransport!
+        
+        var name1 = Name(url: "/a/b/c/%00%01")
+        var name2 = Name(url: "/ndn/swift/2")
+        var name3 = Name(url: "/test/swift/ndn/00")
+        
+        init() {
+            transport = AsyncTcpTransport(face: self, host: host, port: port)
+        }
+        
+        func onOpen() {
+            openExpectation?.fulfill()
+        }
+        
+        func onClose() {
+            closeExpectation?.fulfill()
+        }
+        
+        func onError(reason: String) {
+            
+        }
+        
+        func onMessage(block: Tlv.Block) {
+            if let n = Name(block: block) {
+                if n == name1! {
+                    name1Received = true
+                    receiveName1Expectation?.fulfill()
+                } else if n == name2! {
+                    name2Received = true
+                    receiveName2Expectation?.fulfill()
+                } else if n == name3! {
+                    name3Received = true
+                    receiveName3Expectation?.fulfill()
+                }
+            }
+            
+            if name1Received && name2Received && name3Received {
+                transport.close()
+            }
+        }
+        
+        func run() {
+            transport.connect()
+            transport.send(name1!.wireEncode()!)
+            transport.send(name2!.wireEncode()! + name3!.wireEncode()!)
+        }
+    }
+    
+    func testTransport() {
+        var server = TlvEchoServer()
+        server.start()
+        
+        var client = TlvEchoClient()
+        client.openExpectation = expectationWithDescription("open transport")
+        client.receiveName1Expectation = expectationWithDescription("receive name1")
+        client.receiveName2Expectation = expectationWithDescription("receive name2")
+        client.receiveName3Expectation = expectationWithDescription("receive name3")
+        client.closeExpectation = expectationWithDescription("close transport")
+        client.run()
+        
+        waitForExpectationsWithTimeout(4, handler: { error in
+            if let err = error {
+                println("testTransport: \(err.localizedDescription)")
+            }
+        })
+    }
+    
 //    func testPerformanceExample() {
 //        // This is an example of a performance test case.
 //        self.measureBlock() {

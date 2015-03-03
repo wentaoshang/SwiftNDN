@@ -193,8 +193,8 @@ public class Name: Tlv {
         }
     }
     
-    public class func wireDecode(buf: Buffer) -> Name? {
-        let (block, _) = Block.wireDecode(buf)
+    public class func wireDecode(bytes: [UInt8]) -> Name? {
+        let (block, _) = Block.wireDecode(bytes)
         if let blk = block {
             return Name(block: blk)
         } else {

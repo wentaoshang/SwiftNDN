@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3738120B1AA5431900D8627F /* AsyncTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738120A1AA5431900D8627F /* AsyncTransport.swift */; };
+		3738120F1AA5495800D8627F /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3738120C1AA5495800D8627F /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3738120D1AA5495800D8627F /* GCDAsyncSocket.m */; };
+		373812131AA6423600D8627F /* TlvEchoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812121AA6423600D8627F /* TlvEchoServer.swift */; };
 		37725BD81AA1556C0007BF12 /* SwiftNDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 37725BD71AA1556C0007BF12 /* SwiftNDN.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37725BDE1AA1556C0007BF12 /* SwiftNDN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37725BD21AA1556C0007BF12 /* SwiftNDN.framework */; };
 		37725BE51AA1556C0007BF12 /* SwiftNDNTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */; };
@@ -27,6 +31,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3738120A1AA5431900D8627F /* AsyncTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncTransport.swift; sourceTree = "<group>"; };
+		3738120C1AA5495800D8627F /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		3738120D1AA5495800D8627F /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		373812121AA6423600D8627F /* TlvEchoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TlvEchoServer.swift; sourceTree = "<group>"; };
 		37725BD21AA1556C0007BF12 /* SwiftNDN.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNDN.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		37725BD61AA1556C0007BF12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37725BD71AA1556C0007BF12 /* SwiftNDN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftNDN.h; sourceTree = "<group>"; };
@@ -79,12 +87,13 @@
 		37725BD41AA1556C0007BF12 /* SwiftNDN */ = {
 			isa = PBXGroup;
 			children = (
-				37725BD71AA1556C0007BF12 /* SwiftNDN.h */,
+				3738120A1AA5431900D8627F /* AsyncTransport.swift */,
 				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
 				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
 				37725BEF1AA1558A0007BF12 /* Name.swift */,
-				37725BF01AA1558A0007BF12 /* Tlv.swift */,
 				37725BD51AA1556C0007BF12 /* Supporting Files */,
+				37725BD71AA1556C0007BF12 /* SwiftNDN.h */,
+				37725BF01AA1558A0007BF12 /* Tlv.swift */,
 			);
 			path = SwiftNDN;
 			sourceTree = "<group>";
@@ -92,6 +101,8 @@
 		37725BD51AA1556C0007BF12 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3738120C1AA5495800D8627F /* GCDAsyncSocket.h */,
+				3738120D1AA5495800D8627F /* GCDAsyncSocket.m */,
 				37725BD61AA1556C0007BF12 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -100,8 +111,9 @@
 		37725BE11AA1556C0007BF12 /* SwiftNDNTests */ = {
 			isa = PBXGroup;
 			children = (
-				37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */,
 				37725BE21AA1556C0007BF12 /* Supporting Files */,
+				37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */,
+				373812121AA6423600D8627F /* TlvEchoServer.swift */,
 			);
 			path = SwiftNDNTests;
 			sourceTree = "<group>";
@@ -121,6 +133,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3738120F1AA5495800D8627F /* GCDAsyncSocket.h in Headers */,
 				37725BD81AA1556C0007BF12 /* SwiftNDN.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,9 +234,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */,
 				37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */,
 				37725BF21AA1558A0007BF12 /* Name.swift in Sources */,
 				37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */,
+				3738120B1AA5431900D8627F /* AsyncTransport.swift in Sources */,
 				37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,6 +247,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				373812131AA6423600D8627F /* TlvEchoServer.swift in Sources */,
 				37725BE51AA1556C0007BF12 /* SwiftNDNTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,6 +358,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -359,6 +377,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};
@@ -377,6 +397,8 @@
 				INFOPLIST_FILE = SwiftNDNTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -391,6 +413,8 @@
 				INFOPLIST_FILE = SwiftNDNTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};
