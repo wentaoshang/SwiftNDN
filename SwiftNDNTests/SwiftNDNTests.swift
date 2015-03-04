@@ -79,48 +79,23 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(nonExistNumber == nil)
         
         // Test for Non-negative integer
-        var b2 = Buffer(capacity: 1000)
-        b2.writeNonNegativeInteger(0x01)
-        b2.writeNonNegativeInteger(0x0102)
-        b2.writeNonNegativeInteger(0x01020304)
-        b2.writeNonNegativeInteger(0x0102030405060708)
-        let expectedContent2: [UInt8] = [1, 1, 2, 1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8]
-        XCTAssert(b2 == expectedContent2)
-        XCTAssertEqual(b2.size, expectedContent2.count)
+        let arr1 = Buffer.nonNegativeIntegerToByteArray(0x01)
+        let expected1: [UInt8] = [1]
+        XCTAssert(arr1 == expected1)
+        let arr2 = Buffer.nonNegativeIntegerToByteArray(0x0102)
+        let expected2: [UInt8] = [1,2]
+        XCTAssert(arr2 == expected2)
+        let arr3 = Buffer.nonNegativeIntegerToByteArray(0x01020304)
+        let expected3: [UInt8] = [1,2,3,4]
+        XCTAssert(arr3 == expected3)
+        let arr4 = Buffer.nonNegativeIntegerToByteArray(0x0102030405060708)
+        let expected4: [UInt8] = [1, 2, 3, 4, 5, 6, 7, 8]
+        XCTAssert(arr4 == expected4)
         
-        let b2Content = b2.readByteArray(b2.size)
-        XCTAssert(b2Content != nil)
-        XCTAssert(b2Content!.array == expectedContent2)
-        XCTAssertEqual(b2Content!.length, expectedContent2.count)
-        
-        b2 = Buffer(capacity: 1000)
-        b2.writeNonNegativeInteger(0x01)
-        b2.writeNonNegativeInteger(0x0102)
-        b2.writeNonNegativeInteger(0x01020304)
-        b2.writeNonNegativeInteger(0x0102030405060708)
-        
-        let firstNonNegative = b2.readNonNegativeInteger(1)
-        XCTAssert(firstNonNegative != nil)
-        XCTAssert(firstNonNegative!.number == 0x01)
-        XCTAssert(firstNonNegative!.length == 1)
-        
-        let secondNonNegative = b2.readNonNegativeInteger(2)
-        XCTAssert(secondNonNegative != nil)
-        XCTAssert(secondNonNegative!.number == 0x0102)
-        XCTAssert(secondNonNegative!.length == 2)
-        
-        let thirdNonNegative = b2.readNonNegativeInteger(4)
-        XCTAssert(thirdNonNegative != nil)
-        XCTAssert(thirdNonNegative!.number == 0x01020304)
-        XCTAssert(thirdNonNegative!.length == 4)
-        
-        let fourthNonNegative = b2.readNonNegativeInteger(8)
-        XCTAssert(fourthNonNegative != nil)
-        XCTAssert(fourthNonNegative!.number == 0x0102030405060708)
-        XCTAssert(fourthNonNegative!.length == 8)
-        
-        let nonExistNonNegative = b2.readNonNegativeInteger(4)
-        XCTAssert(nonExistNonNegative == nil)
+        XCTAssert(Buffer.byteArrayToNonNegativeInteger(arr1) == 0x01)
+        XCTAssert(Buffer.byteArrayToNonNegativeInteger(arr2) == 0x0102)
+        XCTAssert(Buffer.byteArrayToNonNegativeInteger(arr3) == 0x01020304)
+        XCTAssert(Buffer.byteArrayToNonNegativeInteger(arr4) == 0x0102030405060708)
     }
     
     func testName() {
@@ -230,6 +205,23 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(i0.nonce == i1!.nonce)
     }
     
+    func testData() {
+        var name = "/a/b/c/d/%00%01"
+        var d0 = Data()
+        d0.name = Name(url: name)!
+        d0.metaInfo.setFreshnessPeriod(40000)
+        var content: [UInt8] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        d0.setContent(content)
+        var d0Encode = d0.wireEncode()
+        XCTAssert(d0Encode != nil)
+        
+        var d1 = Data.wireDecode(d0Encode!)
+        XCTAssert(d1 != nil)
+        XCTAssert(d1!.name.toUri() == name)
+        XCTAssert(d1!.metaInfo.getFreshnessPeriod() == 40000)
+        XCTAssert(d1!.getContent() == content)
+    }
+    
     class TlvEchoClient: AsyncTransportDelegate {
         
         var openExpectation: XCTestExpectation?
@@ -237,10 +229,14 @@ class SwiftNDNTests: XCTestCase {
         var receiveName1Expectation: XCTestExpectation?
         var receiveName2Expectation: XCTestExpectation?
         var receiveName3Expectation: XCTestExpectation?
+        var receiveName4Expectation: XCTestExpectation?
+        var receiveName5Expectation: XCTestExpectation?
 
         var name1Received = false
         var name2Received = false
         var name3Received = false
+        var name4Received = false
+        var name5Received = false
         
         var host = "127.0.0.1"
         var port: UInt16 = 12345
@@ -249,6 +245,8 @@ class SwiftNDNTests: XCTestCase {
         var name1 = Name(url: "/a/b/c/%00%01")
         var name2 = Name(url: "/ndn/swift/2")
         var name3 = Name(url: "/test/swift/ndn/00")
+        var name4 = Name(url: "/1/2/3")
+        var name5 = Name(url: "/ok")
         
         init() {
             transport = AsyncTcpTransport(face: self, host: host, port: port)
@@ -277,10 +275,17 @@ class SwiftNDNTests: XCTestCase {
                 } else if n == name3! {
                     name3Received = true
                     receiveName3Expectation?.fulfill()
+                } else if n == name4! {
+                    name4Received = true
+                    receiveName4Expectation?.fulfill()
+                } else if n == name5! {
+                    name5Received = true
+                    receiveName5Expectation?.fulfill()
                 }
             }
             
-            if name1Received && name2Received && name3Received {
+            if name1Received && name2Received && name3Received
+                && name4Received && name5Received {
                 transport.close()
             }
         }
@@ -289,6 +294,10 @@ class SwiftNDNTests: XCTestCase {
             transport.connect()
             transport.send(name1!.wireEncode()!)
             transport.send(name2!.wireEncode()! + name3!.wireEncode()!)
+            let n4Encode = name4!.wireEncode()!
+            let half = n4Encode.count / 2
+            transport.send([UInt8](n4Encode[0..<half]))
+            transport.send([UInt8](n4Encode[half..<n4Encode.count]) + name5!.wireEncode()!)
         }
     }
     
@@ -301,6 +310,8 @@ class SwiftNDNTests: XCTestCase {
         client.receiveName1Expectation = expectationWithDescription("receive name1")
         client.receiveName2Expectation = expectationWithDescription("receive name2")
         client.receiveName3Expectation = expectationWithDescription("receive name3")
+        client.receiveName4Expectation = expectationWithDescription("receive name4")
+        client.receiveName5Expectation = expectationWithDescription("receive name5")
         client.closeExpectation = expectationWithDescription("close transport")
         client.run()
         

@@ -26,6 +26,16 @@ public class Tlv: Printable {
         case ChildSelector = 17
         case MustBeFresh = 18
         case Any = 19
+        case MetaInfo = 20
+        case Content = 21
+        case SignatureInfo = 22
+        case SignatureValue = 23
+        case ContentType = 24
+        case FreshnessPeriod = 25
+        case FinalBlockId = 26
+        case SignatureType = 27
+        case KeyLocator = 28
+        case KeyDigest = 29
         case ImplicitSha256DigestComponent = 32
         
         public var description: String {
@@ -46,6 +56,16 @@ public class Tlv: Printable {
                 case .ChildSelector: return "ChildSelector"
                 case .MustBeFresh: return "MustBeFresh"
                 case .Any: return "Any"
+                case .MetaInfo: return "MetaInfo"
+                case .Content: return "Content"
+                case .SignatureInfo: return "SignatureInfo"
+                case .SignatureValue: return "SignatureValue"
+                case .ContentType: return "ContentType"
+                case .FreshnessPeriod: return "FreshnessPeriod"
+                case .FinalBlockId: return "FinalBlockId"
+                case .SignatureType: return "SignatureType"
+                case .KeyLocator: return "KeyLocator"
+                case .KeyDigest: return "KeyDigest"
                 case .ImplicitSha256DigestComponent: return "DigestComponent"
                 }
             }
@@ -68,6 +88,16 @@ public class Tlv: Printable {
             case .ChildSelector: return false
             case .MustBeFresh: return false
             case .Any: return false
+            case .MetaInfo: return true
+            case .Content: return false
+            case .SignatureInfo: return true
+            case .SignatureValue: return false
+            case .ContentType: return false
+            case .FreshnessPeriod: return false
+            case .FinalBlockId: return false
+            case .SignatureType: return false
+            case .KeyLocator: return true
+            case .KeyDigest: return false
             case .ImplicitSha256DigestComponent: return false
             }
         }

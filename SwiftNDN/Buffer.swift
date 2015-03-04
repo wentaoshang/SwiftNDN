@@ -149,16 +149,18 @@ public class Buffer: Printable {
         }
     }
     
-    public func writeNonNegativeInteger(number: UInt64) -> Buffer {
+    public class func nonNegativeIntegerToByteArray(number: UInt64) -> [UInt8] {
         switch number {
         case let x where x <= 0xFF:
-            return writeByte(UInt8(x & 0xFF))
+            var arr = [UInt8]()
+            arr.append(UInt8(x & 0xFF))
+            return arr
         case let x where x > 0xFF && x <= 0xFFFF:
             var arr = [UInt8]()
             arr.reserveCapacity(2)
             arr.append(UInt8((x >> 8) & 0xFF))
             arr.append(UInt8(x & 0xFF))
-            return writeByteArray(arr)
+            return arr
         case let x where x > 0xFFFF && x <= 0xFFFFFFFF:
             var arr = [UInt8]()
             arr.reserveCapacity(4)
@@ -166,7 +168,7 @@ public class Buffer: Printable {
             arr.append(UInt8((x >> 16) & 0xFF))
             arr.append(UInt8((x >> 8) & 0xFF))
             arr.append(UInt8(x & 0xFF))
-            return writeByteArray(arr)
+            return arr
         case let x where x > 0xFFFFFFFF:
             var arr = [UInt8]()
             arr.reserveCapacity(8)
@@ -178,10 +180,19 @@ public class Buffer: Printable {
             arr.append(UInt8((x >> 16) & 0xFF))
             arr.append(UInt8((x >> 8) & 0xFF))
             arr.append(UInt8(x & 0xFF))
-            return writeByteArray(arr)
-        default: return self
+            return arr
+        default: return [UInt8]()
         }
     }
+    
+    public class func byteArrayToNonNegativeInteger(bytes: [UInt8]) -> UInt64 {
+        var number: UInt64 = 0
+        for b in bytes {
+            number = (number << 8) + UInt64(b)
+        }
+        return number
+    }
+
     
     public func readByteArray(length: Int) -> (array: [UInt8], length: Int)? {
         if head + length > buffer.count {
@@ -194,17 +205,6 @@ public class Buffer: Printable {
         }
         head += length
         return (arr, length)
-    }
-    
-    public func readNonNegativeInteger(length: Int) -> (number: UInt64, length: Int)? {
-        if let result = readByteArray(length) {
-            var number: UInt64 = 0
-            for b in result.array {
-                number = (number << 8) + UInt64(b)
-            }
-            return (number, result.length)
-        }
-        return nil
     }
     
     public var description: String {
