@@ -161,9 +161,9 @@ public class Data: Tlv {
         
         public class SignatureType: Tlv {
             
-            struct Val {
-                static let DigestSha256: UInt64 = 0
-                static let SignatureSha256WithRsa: UInt64 = 1
+            public struct Val {
+                public static let DigestSha256: UInt64 = 0
+                public static let SignatureSha256WithRsa: UInt64 = 1
             }
             
             var value: UInt64 = Val.SignatureSha256WithRsa

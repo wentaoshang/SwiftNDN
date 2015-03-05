@@ -264,6 +264,18 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(i1 != nil)
         XCTAssert(i0.name == i1!.name)
         XCTAssert(i0.nonce == i1!.nonce)
+        
+        var i2 = Interest()
+        i2.name = Name(url: "/a/b/c/%00%01")!
+        i2.setChildSelector(Interest.Selectors.ChildSelector.Val.LeftmostChild)
+        i2.setMustBeFresh()
+        let i2Encode = i2.wireEncode()
+        XCTAssert(i2Encode != nil)
+        var i3 = Interest.wireDecode(i2Encode!)
+        XCTAssert(i3 != nil)
+        XCTAssert(i3!.name.toUri() == "/a/b/c/%00%01")
+        XCTAssert((i3!.getChildSelector())! == Interest.Selectors.ChildSelector.Val.LeftmostChild)
+
     }
     
     func testData() {

@@ -116,9 +116,9 @@ public class Interest: Tlv {
         
         public class ChildSelector: Tlv {
             
-            struct Val {
-                static let LeftmostChild: UInt64 = 0
-                static let RightmostChild: UInt64 = 1
+            public struct Val {
+                public static let LeftmostChild: UInt64 = 0
+                public static let RightmostChild: UInt64 = 1
             }
             
             var value: UInt64 = Val.LeftmostChild
@@ -166,14 +166,61 @@ public class Interest: Tlv {
                 }
             }
         }
+        
+        var exclude: Exclude?
+        var childSelector: ChildSelector?
+        var mustBeFresh: MustBeFresh?
+        
+        public override init() {
+            super.init()
+        }
+        
+        public override var block: Block? {
+            var blk = Block(type: TypeCode.Selectors)
+            
+            if let exBlock = self.exclude?.block {
+                blk.appendBlock(exBlock)
+            }
+            
+            if let csBlock = self.childSelector?.block {
+                blk.appendBlock(csBlock)
+            }
+            
+            if let mbfBlock = self.mustBeFresh?.block {
+                blk.appendBlock(mbfBlock)
+            }
+            
+            return blk
+        }
+        
+        public init?(block: Block) {
+            super.init()
+            if block.type != TypeCode.Selectors {
+                return nil
+            }
+            switch block.value {
+            case .Blocks(let blocks):
+                for blk in blocks {
+                    if let ex = Exclude(block: blk) {
+                        self.exclude = ex
+                    } else if let cs = ChildSelector(block: blk) {
+                        self.childSelector = cs
+                    } else if let mbf = MustBeFresh(block: blk) {
+                        self.mustBeFresh = mbf
+                    }
+                    // Ignore unknown TLVs
+                }
+            default: return nil
+            }
+        }
     }
     
     public class Scope: Tlv {
         
-        struct Val {
-            static let LocalDaemon: UInt64 = 0
-            static let LocalHost: UInt64 = 1
-            static let LocalHub: UInt64 = 2
+        public struct Val {
+            public static let LocalDaemon: UInt64 = 0
+            public static let LocalHost: UInt64 = 1
+            public static let LocalHub: UInt64 = 2
         }
         
         var value: UInt64 = Val.LocalHost
@@ -270,7 +317,7 @@ public class Interest: Tlv {
     }
     
     public var name = Name()
-    
+    public var selectors: Selectors?
     public var nonce = Nonce()
     public var scope: Scope?
     public var interestLifetime: InterestLifetime?
@@ -285,6 +332,10 @@ public class Interest: Tlv {
             blk.appendBlock(nameBlock)
         } else {
             return nil
+        }
+        
+        if let selectorsBlock = self.selectors?.block {
+            blk.appendBlock(selectorsBlock)
         }
         
         blk.appendBlock(self.nonce.block!) // Nonce.block will never return nil
@@ -313,6 +364,8 @@ public class Interest: Tlv {
                 if let na = Name(block: blk) {
                     self.name = na
                     hasName = true
+                } else if let se = Selectors(block: blk) {
+                    self.selectors = se
                 } else if let no = Nonce(block: blk) {
                     self.nonce = no
                     hasNonce = true
@@ -326,6 +379,43 @@ public class Interest: Tlv {
                 return nil
             }
         default: return nil
+        }
+    }
+    
+    public func setExclude(value: [[UInt8]]) {
+        if self.selectors == nil {
+            self.selectors = Selectors()
+        }
+        self.selectors!.exclude = Selectors.Exclude(filter: value)
+    }
+    
+    public func getExclude() -> Selectors.Exclude? {
+        return self.selectors?.exclude
+    }
+    
+    public func setChildSelector(value: UInt64) {
+        if self.selectors == nil {
+            self.selectors = Selectors()
+        }
+        self.selectors!.childSelector = Selectors.ChildSelector(value: value)
+    }
+    
+    public func getChildSelector() -> UInt64? {
+        return self.selectors?.childSelector?.value
+    }
+    
+    public func setMustBeFresh() {
+        if self.selectors == nil {
+            self.selectors = Selectors()
+        }
+        self.selectors!.mustBeFresh = Selectors.MustBeFresh()
+    }
+    
+    public func getMustBeFresh() -> Bool {
+        if self.selectors?.mustBeFresh != nil {
+            return true
+        } else {
+            return false
         }
     }
     
