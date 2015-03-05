@@ -193,6 +193,18 @@ public class Name: Tlv {
         }
     }
     
+    public func isProperPrefixOf(name: Name) -> Bool {
+        if name.size <= self.size {
+            return false
+        }
+        for i in 0 ..< self.components.count {
+            if self.components[i] != name.components[i] {
+                return false
+            }
+        }
+        return true
+    }
+    
     public class func wireDecode(bytes: [UInt8]) -> Name? {
         let (block, _) = Block.wireDecode(bytes)
         if let blk = block {
@@ -207,12 +219,24 @@ public func == (lhs: Name.Component, rhs: Name.Component) -> Bool {
     return lhs.value == rhs.value
 }
 
+public func != (lhs: Name.Component, rhs: Name.Component) -> Bool {
+    return !(lhs == rhs)
+}
+
 public func < (lhs: Name.Component, rhs: Name.Component) -> Bool {
     return lhs.compare(rhs) == -1
 }
 
+public func <= (lhs: Name.Component, rhs: Name.Component) -> Bool {
+    return !(lhs > rhs)
+}
+
 public func > (lhs: Name.Component, rhs: Name.Component) -> Bool {
     return lhs.compare(rhs) == 1
+}
+
+public func >= (lhs: Name.Component, rhs: Name.Component) -> Bool {
+    return !(lhs < rhs)
 }
 
 public func == (lhs: Name, rhs: Name) -> Bool {
@@ -227,6 +251,10 @@ public func == (lhs: Name, rhs: Name) -> Bool {
     }
     
     return true
+}
+
+public func != (lhs: Name, rhs: Name) -> Bool {
+    return !(lhs == rhs)
 }
 
 public func < (lhs: Name, rhs: Name) -> Bool {

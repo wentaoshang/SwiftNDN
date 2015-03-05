@@ -96,10 +96,10 @@
 				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
 				373812171AA6ED2C00D8627F /* Data.swift */,
 				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
+				373812191AA7B84F00D8627F /* KeyChain.swift */,
 				37725BEF1AA1558A0007BF12 /* Name.swift */,
 				37725BF01AA1558A0007BF12 /* Tlv.swift */,
 				37725BD51AA1556C0007BF12 /* Supporting Files */,
-				373812191AA7B84F00D8627F /* KeyChain.swift */,
 			);
 			path = SwiftNDN;
 			sourceTree = "<group>";

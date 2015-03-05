@@ -165,6 +165,12 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(_a_b > _a_a_a)
         XCTAssert(_a_a_a < _a_a_c)
         
+        let _a_b_c = Name(url: "/a/b/c")!
+        XCTAssert(_a.isProperPrefixOf(_a_b))
+        XCTAssert(_a_b.isProperPrefixOf(_a_b_c))
+        XCTAssert(_a.isProperPrefixOf(_a_b_c))
+        XCTAssert(!_a_b.isProperPrefixOf(_a_a_a))
+        
         let emptyName1 = Name()
         XCTAssertEqual(emptyName1.toUri(), "/")
         let emptyEncode = emptyName1.wireEncode()
@@ -193,6 +199,61 @@ class SwiftNDNTests: XCTestCase {
 //        println(url4?.absoluteString)
 //        println(url4?.pathComponents)
 //        println(url4?.pathComponents?.count)
+    }
+    
+    func testExclude() {
+        let f0: [[UInt8]] = [[0x03], []]
+        let ex0 = Interest.Selectors.Exclude(filter: f0)
+        XCTAssert(!ex0.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex0.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(ex0.matchesComponent(Name.Component(bytes: [0x04])))
+        
+        let f1: [[UInt8]] = [[], [0x03]]
+        let ex1 = Interest.Selectors.Exclude(filter: f1)
+        XCTAssert(ex1.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex1.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(!ex1.matchesComponent(Name.Component(bytes: [0x04])))
+        
+        let f2: [[UInt8]] = [[0x01], [], [], [0x03]]
+        let ex2 = Interest.Selectors.Exclude(filter: f2)
+        XCTAssert(!ex2.matchesComponent(Name.Component(bytes: [0x00])))
+        XCTAssert(ex2.matchesComponent(Name.Component(bytes: [0x01])))
+        XCTAssert(ex2.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex2.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(!ex2.matchesComponent(Name.Component(bytes: [0x04])))
+
+        
+        let f3: [[UInt8]] = [[], [0x01], [], [], [0x03], [0x05], []]
+        let ex3 = Interest.Selectors.Exclude(filter: f3)
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x00])))
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x01])))
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(!ex3.matchesComponent(Name.Component(bytes: [0x04])))
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x05])))
+        XCTAssert(ex3.matchesComponent(Name.Component(bytes: [0x06])))
+
+        let f4: [[UInt8]] = [[0x01], [0x02], [0x03]]
+        let ex4 = Interest.Selectors.Exclude(filter: f4)
+        XCTAssert(!ex4.matchesComponent(Name.Component(bytes: [0x00])))
+        XCTAssert(ex4.matchesComponent(Name.Component(bytes: [0x01])))
+        XCTAssert(ex4.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex4.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(!ex4.matchesComponent(Name.Component(bytes: [0x04])))
+        
+        let f5: [[UInt8]] = [[], [0x01], [0x03], [0x05], [], [0x07], [0x09]]
+        let ex5 = Interest.Selectors.Exclude(filter: f5)
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x00])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x01])))
+        XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x04])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x05])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x06])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x07])))
+        XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x08])))
+        XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x09])))
+        XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x0A])))
     }
     
     func testInterest() {
