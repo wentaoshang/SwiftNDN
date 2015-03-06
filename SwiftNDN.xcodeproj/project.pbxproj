@@ -13,6 +13,7 @@
 		373812131AA6423600D8627F /* TlvEchoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812121AA6423600D8627F /* TlvEchoServer.swift */; };
 		373812181AA6ED2C00D8627F /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812171AA6ED2C00D8627F /* Data.swift */; };
 		3738121E1AA8352900D8627F /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121D1AA8352900D8627F /* KeyChain.swift */; };
+		373812201AA9532E00D8627F /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121F1AA9532E00D8627F /* Face.swift */; };
 		37725BD81AA1556C0007BF12 /* SwiftNDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 37725BD71AA1556C0007BF12 /* SwiftNDN.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37725BDE1AA1556C0007BF12 /* SwiftNDN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37725BD21AA1556C0007BF12 /* SwiftNDN.framework */; };
 		37725BE51AA1556C0007BF12 /* SwiftNDNTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */; };
@@ -39,6 +40,7 @@
 		373812121AA6423600D8627F /* TlvEchoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TlvEchoServer.swift; sourceTree = "<group>"; };
 		373812171AA6ED2C00D8627F /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		3738121D1AA8352900D8627F /* KeyChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
+		3738121F1AA9532E00D8627F /* Face.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
 		37725BD21AA1556C0007BF12 /* SwiftNDN.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNDN.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		37725BD61AA1556C0007BF12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37725BD71AA1556C0007BF12 /* SwiftNDN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftNDN.h; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				3738120A1AA5431900D8627F /* AsyncTransport.swift */,
 				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
 				373812171AA6ED2C00D8627F /* Data.swift */,
+				3738121F1AA9532E00D8627F /* Face.swift */,
 				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
 				3738121D1AA8352900D8627F /* KeyChain.swift */,
 				37725BEF1AA1558A0007BF12 /* Name.swift */,
@@ -244,6 +247,7 @@
 				373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */,
 				37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */,
 				37725BF21AA1558A0007BF12 /* Name.swift in Sources */,
+				373812201AA9532E00D8627F /* Face.swift in Sources */,
 				37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */,
 				3738121E1AA8352900D8627F /* KeyChain.swift in Sources */,
 				3738120B1AA5431900D8627F /* AsyncTransport.swift in Sources */,

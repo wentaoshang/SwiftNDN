@@ -422,6 +422,28 @@ class SwiftNDNTests: XCTestCase {
         })
     }
     
+    func testTimer() {
+        if let timer = Timer() {
+            var timerExpectation = expectationWithDescription("fire timer")
+            let startTime = mach_absolute_time()
+            timer.setTimeout(2000) {
+                timerExpectation.fulfill()
+                let stopTime = mach_absolute_time()
+                let elapsed = stopTime - startTime
+                var tinfo = mach_timebase_info(numer: 1, denom: 1)
+                mach_timebase_info(&tinfo)
+                let elapsedMS = elapsed * UInt64(tinfo.numer) / UInt64(tinfo.denom) / 1000000
+                XCTAssert(elapsedMS >= 2000)
+            }
+            
+            waitForExpectationsWithTimeout(3, handler: { error in
+                if let err = error {
+                    println("testTimer: \(err.localizedDescription)")
+                }
+            })
+        }
+    }
+    
 //    func testPerformanceExample() {
 //        // This is an example of a performance test case.
 //        self.measureBlock() {
