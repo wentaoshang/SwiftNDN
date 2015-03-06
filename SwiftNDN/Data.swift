@@ -110,22 +110,6 @@ public class Data: Tlv {
             }
             return Block(type: TypeCode.MetaInfo, blocks: blocks)
         }
-        
-        public func setFreshnessPeriod(value: UInt64) {
-            self.freshnessPeriod = FreshnessPeriod(value: value)
-        }
-        
-        public func getFreshnessPeriod() -> UInt64? {
-            return self.freshnessPeriod?.value
-        }
-        
-        public func setContentType(value: UInt64) {
-            self.contentType = ContentType(value: value)
-        }
-        
-        public func getContentType() -> UInt64? {
-            return self.contentType?.value
-        }
     }
     
     public class Content: Tlv {
@@ -164,6 +148,7 @@ public class Data: Tlv {
             public struct Val {
                 public static let DigestSha256: UInt64 = 0
                 public static let SignatureSha256WithRsa: UInt64 = 1
+                public static let SignatureSha256WithEcdsa: UInt64 = 3
             }
             
             var value: UInt64 = Val.SignatureSha256WithRsa
@@ -396,6 +381,41 @@ public class Data: Tlv {
     
     public func getContent() -> [UInt8] {
         return self.content.value
+    }
+    
+    public func setFreshnessPeriod(value: UInt64) {
+        self.metaInfo.freshnessPeriod = MetaInfo.FreshnessPeriod(value: value)
+    }
+    
+    public func getFreshnessPeriod() -> UInt64? {
+        return self.metaInfo.freshnessPeriod?.value
+    }
+    
+    public func setContentType(value: UInt64) {
+        self.metaInfo.contentType = MetaInfo.ContentType(value: value)
+    }
+    
+    public func getContentType() -> UInt64? {
+        return self.metaInfo.contentType?.value
+    }
+    
+    func setSignature(value: [UInt8]) {
+        self.signatureValue = SignatureValue(value: value)
+    }
+    
+    func getSignature() -> [UInt8] {
+        return self.signatureValue.value
+    }
+    
+    public func getSignedPortion() -> [UInt8]? {
+        if let nameEncode = self.name.wireEncode() {
+            if let sigInfoEncode = self.signatureInfo.wireEncode() {
+                let metaEncode = self.metaInfo.block!.wireEncode()
+                let contentEncode = self.content.block!.wireEncode()
+                return nameEncode + metaEncode + contentEncode + sigInfoEncode
+            }
+        }
+        return nil
     }
     
     public class func wireDecode(bytes: [UInt8]) -> Data? {

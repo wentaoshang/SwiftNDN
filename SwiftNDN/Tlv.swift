@@ -121,13 +121,20 @@ public class Tlv: Printable {
                 case .Blocks(let blocks):
                     var totalLength: Length = 0
                     for blk in blocks {
-                        let l = blk.length
-                        totalLength += l + Buffer.getVarNumberEncodedLength(l)
-                            + Buffer.getVarNumberEncodedLength(blk.type.rawValue)
+                        //let l = blk.length
+                        //totalLength += l + Buffer.getVarNumberEncodedLength(l)
+                        //    + Buffer.getVarNumberEncodedLength(blk.type.rawValue)
+                        totalLength += blk.tlvLength
                     }
                     return totalLength
                 }
             }
+        }
+        
+        var tlvLength: Length {
+            let l = self.length
+            return l + Buffer.getVarNumberEncodedLength(l)
+                + Buffer.getVarNumberEncodedLength(self.type.rawValue)
         }
         
         public init(type: TypeCode) {
