@@ -193,6 +193,24 @@ public class Buffer: Printable {
         return number
     }
 
+    public class func byteArrayFromString(string: String) -> [UInt8]? {
+        if let data = (string as NSString).dataUsingEncoding(NSASCIIStringEncoding) {
+            var arr = [UInt8](count: data.length, repeatedValue: 0)
+            data.getBytes(&arr, length: data.length)
+            return arr
+        } else {
+            return nil
+        }
+    }
+    
+    public class func stringFromByteArray(bytes: [UInt8]) -> String? {
+        let data = NSData(bytes: bytes, length: bytes.count)
+        if let string = NSString(data: data, encoding: NSASCIIStringEncoding) {
+            return string
+        } else {
+            return nil
+        }
+    }
     
     public func readByteArray(length: Int) -> (array: [UInt8], length: Int)? {
         if head + length > buffer.count {

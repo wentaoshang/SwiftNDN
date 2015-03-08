@@ -96,6 +96,15 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(Buffer.nonNegativeIntegerFromByteArray(arr2) == 0x0102)
         XCTAssert(Buffer.nonNegativeIntegerFromByteArray(arr3) == 0x01020304)
         XCTAssert(Buffer.nonNegativeIntegerFromByteArray(arr4) == 0x0102030405060708)
+        
+        // Test for Array-String conversion
+        let str = "abcd1234"
+        let arr = Buffer.byteArrayFromString(str)
+        XCTAssert(arr != nil)
+        XCTAssert(arr! == [97, 98, 99, 100, 49, 50, 51, 52])
+        let str0 = Buffer.stringFromByteArray(arr!)
+        XCTAssert(str0 != nil)
+        XCTAssertEqual(str0!, str)
     }
     
     func testName() {
@@ -199,6 +208,18 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(n30 != n31)
         XCTAssertEqual(n30.toUri(), "/a/b/c")
         XCTAssertEqual(n31.toUri(), "/a/b/c/d")
+        
+        XCTAssert(Name(url: "/%a") == nil)
+        XCTAssert(Name(url: "/+a") != nil)
+        XCTAssert(Name(url: "/-a") != nil)
+        XCTAssert(Name(url: "/.a") != nil)
+        XCTAssert(Name(url: "/_a") != nil)
+        
+        //FIXME:
+        //XCTAssert(Name(url: "/@a") == nil)
+        //XCTAssert(Name(url: "/&a") == nil)
+        //XCTAssert(Name(url: "/!a") == nil)
+        //XCTAssert(Name(url: "/!a")! == Name(url: "/%21a")!)
 
         // NSURL usages
 //        let url0 = NSURL(string: "%00%01")

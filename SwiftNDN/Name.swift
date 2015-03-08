@@ -8,6 +8,9 @@
 
 import Foundation
 
+public let NDNURIAllowedCharacterSet = NSCharacterSet(charactersInString:
+    "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+._-")
+
 public class Name: Tlv {
     
     public class Component: Tlv {
@@ -44,17 +47,25 @@ public class Name: Tlv {
                 if unescaped == "/" {
                     return nil
                 }
-                let cStr = unescaped.cStringUsingEncoding(NSASCIIStringEncoding)
-                let cStrLen = unescaped.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
-                if cStrLen == 0 {
+//                let cStr = unescaped.cStringUsingEncoding(NSASCIIStringEncoding)
+//                let cStrLen = unescaped.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
+//                if cStrLen == 0 {
+//                    return nil
+//                }
+//                var bytes = [UInt8]()
+//                bytes.reserveCapacity(cStrLen)
+//                for i in 0..<cStrLen {
+//                    bytes.append(UInt8(cStr[i]))
+//                }
+                if let bytes = Buffer.byteArrayFromString(unescaped) {
+                    if bytes.count == 0 {
+                        return nil
+                    } else {
+                        self.value = bytes
+                    }
+                } else {
                     return nil
                 }
-                var bytes = [UInt8]()
-                bytes.reserveCapacity(cStrLen)
-                for i in 0..<cStrLen {
-                    bytes.append(UInt8(cStr[i]))
-                }
-                self.value = bytes
             } else {
                 return nil
             }
@@ -62,7 +73,8 @@ public class Name: Tlv {
         
         public func toUri() -> String {
             var uri = NSString(bytes: self.value, length: self.value.count, encoding: NSASCIIStringEncoding)
-            return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet()))!
+            //return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet()))!
+            return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NDNURIAllowedCharacterSet))!
         }
         
         // Return -1 if self < target; +1 if self > target; 0 if self == target
@@ -141,18 +153,30 @@ public class Name: Tlv {
         if let comps = NSURL(string: url)?.pathComponents {
             for i in 1..<comps.count {
                 let string = comps[i] as NSString
-                let cStr = string.cStringUsingEncoding(NSASCIIStringEncoding)
-                let cStrLen = string.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
-                if cStrLen == 0 {
-                    continue // skip empty string
+                if let bytes = Buffer.byteArrayFromString(string) {
+                    if bytes.count == 0 {
+                        continue // skip empty string
+                    } else {
+                        self.appendComponent(Component(bytes: bytes))
+                    }
+                } else {
+                    return nil
                 }
-                var bytes = [UInt8]()
-                bytes.reserveCapacity(cStrLen)
-                for i in 0..<cStrLen {
-                    bytes.append(UInt8(cStr[i]))
-                }
-                self.appendComponent(Component(bytes: bytes))
+
+//                let cStr = string.cStringUsingEncoding(NSASCIIStringEncoding)
+//                let cStrLen = string.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
+//                if cStrLen == 0 {
+//                    continue // skip empty string
+//                }
+//                var bytes = [UInt8]()
+//                bytes.reserveCapacity(cStrLen)
+//                for i in 0..<cStrLen {
+//                    bytes.append(UInt8(cStr[i]))
+//                }
+//                self.appendComponent(Component(bytes: bytes))
             }
+        } else {
+            return nil
         }
     }
     
