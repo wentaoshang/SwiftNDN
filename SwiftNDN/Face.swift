@@ -24,7 +24,7 @@ public class Timer {
         self.callback = callback
         var delay = dispatch_time(DISPATCH_TIME_NOW, Int64(ms) * 1000000)
         dispatch_source_set_timer(timer, delay, UInt64.max, ms * 100000)
-        dispatch_source_set_event_handler(timer, self.handler)
+        dispatch_source_set_event_handler(timer, { [unowned self] in self.handler() })
         dispatch_resume(self.timer)
     }
     
@@ -38,67 +38,128 @@ public class Timer {
     }
 }
 
+public protocol FaceDelegate: class {
+    func onOpen()
+    func onClose()
+    func onError(reason: String)
+}
+
 public class Face: AsyncTransportDelegate {
     
     var transport: AsyncTcpTransport!
+    weak var delegate: FaceDelegate!
     
     var host = "127.0.0.1"
     var port: UInt16 = 6363
-    
-    public typealias OnOpenCallback = () -> Void
-    public typealias OnCloseCallback = () -> Void
-    public typealias OnErrorCallback = (String) -> Void
-    
-    var onOpenCb: OnOpenCallback?
-    var onCloseCb: OnCloseCallback?
-    var onErrorCb: OnErrorCallback?
     
     public typealias OnDataCallback = (Interest, Data) -> Void
     public typealias OnTimeoutCallback = (Interest) -> Void
     public typealias OnInterestCallback = (Interest) -> Void
     
-    var interestDispatchTable = [(Interest, OnDataCallback, OnTimeoutCallback)]()
-    var dataDispatchTable = [(Name, OnInterestCallback)]()
-    
-    public init() {
-        transport = AsyncTcpTransport(face: self, host: host, port: port)
+    class ExpressedInterestTable {
+        
+        class Entry {
+            var interest: Interest
+            var onData: OnDataCallback?
+            var onTimeout: OnTimeoutCallback?
+            var timer: Timer!
+            
+            init?(interest: Interest, onDataCb: OnDataCallback?,
+                onTimeoutCb: OnTimeoutCallback?)
+            {
+                self.interest = interest
+                self.onData = onDataCb
+                self.onTimeout = onTimeoutCb
+                self.timer = Timer()
+                if self.timer == nil {
+                    return nil
+                }
+            }
+        }
+        
+        var table = LinkedList<Entry>()
+        
+        func append(interest: Interest, onDataCb: OnDataCallback?,
+            onTimeoutCb: OnTimeoutCallback?)
+        {
+            if let entry = Entry(interest: interest,
+                onDataCb: onDataCb, onTimeoutCb: onTimeoutCb)
+            {
+                var listEntry = table.appendAtTail(entry)
+                let lifetime = interest.getInterestLifetime() ?? 4000
+                entry.timer.setTimeout(lifetime, callback: {
+                    listEntry.detach()
+                    if let cb = entry.onTimeout {
+                        cb(entry.interest)
+                    }
+                })
+            }
+        }
+        
+        func consumeWithData(data: Data) {
+            table.forEachEntry() { listEntry in
+                if let entry = listEntry.value {
+                    if entry.interest.matchesData(data) {
+                        listEntry.detach()
+                        entry.timer?.cancel()
+                        entry.timer = nil
+                        if let onData = entry.onData {
+                            onData(entry.interest, data)
+                        }
+                    }
+                }
+            }
+        }
     }
     
-    public init(host: String, port: UInt16, onOpenCallback: () -> Void) {
+    var expressedInterests = ExpressedInterestTable()
+    
+    public init(delegate: FaceDelegate) {
+        self.delegate = delegate
+        self.transport = AsyncTcpTransport(face: self, host: host, port: port)
+    }
+    
+    public init(delegate: FaceDelegate, host: String, port: UInt16) {
+        self.delegate = delegate
         self.host = host
         self.port = port
         self.transport = AsyncTcpTransport(face: self, host: host, port: port)
     }
     
-    public func setOnOpenCallback(cb: OnOpenCallback) {
-        self.onOpenCb = cb
-    }
-    
     public func onOpen() {
-        self.onOpenCb?()
-    }
-    
-    public func setOnCloseCallback(cb: OnCloseCallback) {
-        self.onCloseCb = cb
+        self.delegate.onOpen()
     }
     
     public func onClose() {
-        self.onCloseCb?()
-    }
-    
-    public func setOnErrorCallback(cb: OnErrorCallback) {
-        self.onErrorCb = cb
+        self.delegate.onClose()
     }
     
     public func onError(reason: String) {
-        self.onErrorCb?(reason)
+        self.delegate.onError(reason)
     }
     
     public func open() {
         transport.connect()
     }
+
+    public func close() {
+        transport.close()
+    }
     
     public func onMessage(block: Tlv.Block) {
-        
+        if let interest = Interest(block: block) {
+            
+        } else if let data = Data(block: block) {
+            expressedInterests.consumeWithData(data)
+        }
+    }
+    
+    public func expressInterest(interest: Interest,
+        onData: OnDataCallback?, onTimeout: OnTimeoutCallback?)
+    {
+        if let wire = interest.wireEncode() {
+            expressedInterests.append(interest, onDataCb: onData, onTimeoutCb: onTimeout)
+            transport.send(wire)
+        }
     }
 }

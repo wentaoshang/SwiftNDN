@@ -23,7 +23,7 @@ public class Data: Tlv {
             var value: UInt64 = Val.Blob
             
             public override var block: Block? {
-                let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
                 return Block(type: TypeCode.ContentType, bytes: bytes)
             }
             
@@ -42,7 +42,7 @@ public class Data: Tlv {
                 }
                 switch block.value {
                 case .RawBytes(let bytes):
-                    self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
                 default: return nil
                 }
             }
@@ -63,13 +63,13 @@ public class Data: Tlv {
                 }
                 switch block.value {
                 case .RawBytes(let bytes):
-                    self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
                 default: return nil
                 }
             }
             
             public override var block: Block? {
-                let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
                 return Block(type: TypeCode.FreshnessPeriod, bytes: bytes)
             }
         }
@@ -168,13 +168,13 @@ public class Data: Tlv {
                 }
                 switch block.value {
                 case .RawBytes(let bytes):
-                    self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
                 default: return nil
                 }
             }
             
             public override var block: Block? {
-                let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
                 return Block(type: TypeCode.SignatureType, bytes: bytes)
             }
         }

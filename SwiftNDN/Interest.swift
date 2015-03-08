@@ -138,13 +138,13 @@ public class Interest: Tlv {
                 }
                 switch block.value {
                 case .RawBytes(let bytes):
-                    self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
                 default: return nil
                 }
             }
             
             public override var block: Block? {
-                let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
                 return Block(type: TypeCode.ChildSelector, bytes: bytes)
             }
         }
@@ -240,13 +240,13 @@ public class Interest: Tlv {
             }
             switch block.value {
             case .RawBytes(let bytes):
-                self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
             default: return nil
             }
         }
         
         public override var block: Block? {
-            let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+            let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
             return Block(type: TypeCode.Scope, bytes: bytes)
         }
     }
@@ -270,13 +270,13 @@ public class Interest: Tlv {
             }
             switch block.value {
             case .RawBytes(let bytes):
-                self.value = Buffer.byteArrayToNonNegativeInteger(bytes)
+                self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
             default: return nil
             }
         }
         
         public override var block: Block? {
-            let bytes = Buffer.nonNegativeIntegerToByteArray(value)
+            let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
             return Block(type: TypeCode.InterestLifetime, bytes: bytes)
         }
     }
@@ -442,6 +442,26 @@ public class Interest: Tlv {
         } else {
             return nil
         }
+    }
+    
+    public func matchesData(data: Data) -> Bool {
+        if !self.name.isPrefixOf(data.name) {
+            return false
+        }
+        
+        if let exclude = self.selectors?.exclude {
+            if self.name.size < data.name.size {
+                if let excludedComponent = data.name.getComponentByIndex(self.name.size) {
+                    if exclude.matchesComponent(excludedComponent) {
+                        return false
+                    }
+                }
+            }
+//            else {
+//                //TODO: check implicit digest
+//            }
+        }
+        return true
     }
 }
 

@@ -21,6 +21,8 @@
 		37725BF21AA1558A0007BF12 /* Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEF1AA1558A0007BF12 /* Name.swift */; };
 		37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BF01AA1558A0007BF12 /* Tlv.swift */; };
 		37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725C0A1AA28DAD0007BF12 /* Interest.swift */; };
+		37DE78421AABB134005DD246 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78411AABB134005DD246 /* LinkedList.swift */; };
+		37DE78441AACB0FC005DD246 /* FaceTestServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78431AACB0FC005DD246 /* FaceTestServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,8 @@
 		37725BEF1AA1558A0007BF12 /* Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Name.swift; sourceTree = "<group>"; };
 		37725BF01AA1558A0007BF12 /* Tlv.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tlv.swift; sourceTree = "<group>"; };
 		37725C0A1AA28DAD0007BF12 /* Interest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interest.swift; sourceTree = "<group>"; };
+		37DE78411AABB134005DD246 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		37DE78431AACB0FC005DD246 /* FaceTestServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FaceTestServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +104,7 @@
 				3738121F1AA9532E00D8627F /* Face.swift */,
 				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
 				3738121D1AA8352900D8627F /* KeyChain.swift */,
+				37DE78411AABB134005DD246 /* LinkedList.swift */,
 				37725BEF1AA1558A0007BF12 /* Name.swift */,
 				37725BF01AA1558A0007BF12 /* Tlv.swift */,
 				37725BD51AA1556C0007BF12 /* Supporting Files */,
@@ -120,6 +125,7 @@
 		37725BE11AA1556C0007BF12 /* SwiftNDNTests */ = {
 			isa = PBXGroup;
 			children = (
+				37DE78431AACB0FC005DD246 /* FaceTestServer.swift */,
 				37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */,
 				373812121AA6423600D8627F /* TlvEchoServer.swift */,
 				37725BE21AA1556C0007BF12 /* Supporting Files */,
@@ -245,6 +251,7 @@
 			files = (
 				373812181AA6ED2C00D8627F /* Data.swift in Sources */,
 				373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */,
+				37DE78421AABB134005DD246 /* LinkedList.swift in Sources */,
 				37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */,
 				37725BF21AA1558A0007BF12 /* Name.swift in Sources */,
 				373812201AA9532E00D8627F /* Face.swift in Sources */,
@@ -260,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				373812131AA6423600D8627F /* TlvEchoServer.swift in Sources */,
+				37DE78441AACB0FC005DD246 /* FaceTestServer.swift in Sources */,
 				37725BE51AA1556C0007BF12 /* SwiftNDNTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

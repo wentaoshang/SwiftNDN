@@ -110,6 +110,11 @@ public class Name: Tlv {
     public override init() {
         super.init()
     }
+    
+    public init(name: Name) {
+        // make a copy
+        self.components = name.components
+    }
 
     public init?(block: Block) {
         super.init()
@@ -155,8 +160,21 @@ public class Name: Tlv {
         self.components.append(component)
     }
     
+    public func appendComponent(url: String) -> Bool {
+        if let c = Component(url: url) {
+            self.components.append(c)
+            return true
+        } else {
+            return false
+        }
+    }
+    
     public func getComponentByIndex(index: Int) -> Component? {
-        return self.components[index]
+        if index < self.components.count {
+            return self.components[index]
+        } else {
+            return nil
+        }
     }
 
     public func toUri() -> String {
@@ -194,7 +212,11 @@ public class Name: Tlv {
     }
     
     public func isProperPrefixOf(name: Name) -> Bool {
-        if name.size <= self.size {
+        return self.isPrefixOf(name) && self.size < name.size
+    }
+    
+    public func isPrefixOf(name: Name) -> Bool {
+        if name.size < self.size {
             return false
         }
         for i in 0 ..< self.components.count {

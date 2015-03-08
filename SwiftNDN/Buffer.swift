@@ -149,7 +149,7 @@ public class Buffer: Printable {
         }
     }
     
-    public class func nonNegativeIntegerToByteArray(number: UInt64) -> [UInt8] {
+    public class func byteArrayFromNonNegativeInteger(number: UInt64) -> [UInt8] {
         switch number {
         case let x where x <= 0xFF:
             var arr = [UInt8]()
@@ -185,7 +185,7 @@ public class Buffer: Printable {
         }
     }
     
-    public class func byteArrayToNonNegativeInteger(bytes: [UInt8]) -> UInt64 {
+    public class func nonNegativeIntegerFromByteArray(bytes: [UInt8]) -> UInt64 {
         var number: UInt64 = 0
         for b in bytes {
             number = (number << 8) + UInt64(b)
