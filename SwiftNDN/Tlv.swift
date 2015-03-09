@@ -10,7 +10,7 @@ import Foundation
 
 public class Tlv: Printable {
     
-    public enum TypeCode: UInt64, Printable {
+    public enum NDNType: UInt64, Printable {
         case Interest = 5
         case Data = 6
         case Name = 7
@@ -103,6 +103,29 @@ public class Tlv: Printable {
         }
     }
     
+    public class TypeCode: Printable {
+        public let code: UInt64
+        public let isNested: Bool
+        
+        public init(code: UInt64) {
+            if let ndnType = NDNType(rawValue: code) {
+                self.code = ndnType.rawValue
+                self.isNested = ndnType.isNested()
+            } else {
+                self.code = code
+                self.isNested = false
+            }
+        }
+        
+        public var description: String {
+            if let ndnType = NDNType(rawValue: self.code) {
+                return ndnType.description
+            } else {
+                return "UnknownType(\(self.code))"
+            }
+        }
+    }
+    
     public typealias Length = UInt64
     
     public enum Value {
@@ -134,16 +157,20 @@ public class Tlv: Printable {
         var tlvLength: Length {
             let l = self.length
             return l + Buffer.getVarNumberEncodedLength(l)
-                + Buffer.getVarNumberEncodedLength(self.type.rawValue)
+                + Buffer.getVarNumberEncodedLength(self.type.code)
         }
         
         public init(type: TypeCode) {
             self.type = type
-            if self.type.isNested() {
+            if self.type.isNested {
                 self.value = Value.Blocks([Block]())
             } else {
                 self.value = Value.RawBytes([UInt8]())
             }
+        }
+        
+        public convenience init(type: NDNType) {
+            self.init(type: TypeCode(code: type.rawValue))
         }
         
         public init(type: TypeCode, bytes: [UInt8]) {
@@ -151,9 +178,17 @@ public class Tlv: Printable {
             self.value = Value.RawBytes(bytes)
         }
         
+        public convenience init(type: NDNType, bytes: [UInt8]) {
+            self.init(type: TypeCode(code: type.rawValue), bytes: bytes)
+        }
+        
         public init(type: TypeCode, blocks: [Block]) {
             self.type = type
             self.value = Value.Blocks(blocks)
+        }
+        
+        public convenience init(type: NDNType, blocks: [Block]) {
+            self.init(type: TypeCode(code: type.rawValue), blocks: blocks)
         }
         
         public var description: String {
@@ -187,7 +222,7 @@ public class Tlv: Printable {
         public func wireEncode() -> [UInt8] {
             let len = self.length
             let totalLength = len + Buffer.getVarNumberEncodedLength(len)
-                + Buffer.getVarNumberEncodedLength(self.type.rawValue)
+                + Buffer.getVarNumberEncodedLength(self.type.code)
             var buf = Buffer(capacity: Int(totalLength))
             self.wireEncode(buf)
             return buf.buffer
@@ -195,7 +230,7 @@ public class Tlv: Printable {
         
         public func wireEncode(buf: Buffer) {
             let len = self.length
-            buf.writeVarNumber(self.type.rawValue).writeVarNumber(len)
+            buf.writeVarNumber(self.type.code).writeVarNumber(len)
             switch self.value {
             case .RawBytes(let bytes):
                 buf.writeByteArray(bytes)
@@ -217,34 +252,34 @@ public class Tlv: Printable {
             var lengthRead: Int = 0
             if let (typeNumber, typeLength) = buf.readVarNumber() {
                 lengthRead += typeLength
-                if let typeCode = Tlv.TypeCode(rawValue: typeNumber) {
-                    // Then, read TLV length
-                    if let (len, lenLength) = buf.readVarNumber() {
-                        lengthRead += lenLength
-                        if typeCode.isNested() {
-                            // Recursive TLV
-                            var blocks = [Block]()
-                            var remainingLength = len
-                            while remainingLength > 0 {
-                                let (block, l) = wireDecode(buf)
-                                lengthRead += l
-                                if let blk = block {
-                                    blocks.append(blk)
-                                } else {
-                                    break
-                                }
-                                remainingLength -= l
+                // Then, read TLV length
+                if let (len, lenLength) = buf.readVarNumber() {
+                    lengthRead += lenLength
+                    // Check type code
+                    let typeCode = TypeCode(code: typeNumber)
+                    if typeCode.isNested {
+                        // Recursive TLV
+                        var blocks = [Block]()
+                        var remainingLength = len
+                        while remainingLength > 0 {
+                            let (block, l) = wireDecode(buf)
+                            lengthRead += l
+                            if let blk = block {
+                                blocks.append(blk)
+                            } else {
+                                break
                             }
-                            if remainingLength == 0 {
-                                // length of this TLV matches the value
-                                return (Block(type: typeCode, blocks: blocks), lengthRead)
-                            }
-                        } else {
-                            // Non-recursive TLV
-                            if let (bytes, bytesLength) = buf.readByteArray(Int(len)) {
-                                lengthRead += bytesLength
-                                return (Block(type: typeCode, bytes: bytes), lengthRead)
-                            }
+                            remainingLength -= l
+                        }
+                        if remainingLength == 0 {
+                            // length of this TLV matches the value
+                            return (Block(type: typeCode, blocks: blocks), lengthRead)
+                        }
+                    } else {
+                        // Non-recursive TLV
+                        if let (bytes, bytesLength) = buf.readByteArray(Int(len)) {
+                            lengthRead += bytesLength
+                            return (Block(type: typeCode, bytes: bytes), lengthRead)
                         }
                     }
                 }
@@ -272,7 +307,7 @@ public class Tlv: Printable {
 }
 
 public func == (lhs: Tlv.Block, rhs: Tlv.Block) -> Bool {
-    if lhs.type != rhs.type {
+    if lhs.type.code != rhs.type.code {
         return false
     }
     
@@ -297,4 +332,12 @@ public func == (lhs: Tlv.Block, rhs: Tlv.Block) -> Bool {
 
 public func == (lhs: Tlv, rhs: Tlv) -> Bool {
     return false
+}
+
+public func == (lhs: Tlv.TypeCode, rhs: Tlv.NDNType) -> Bool {
+    return lhs.code == rhs.rawValue
+}
+
+public func != (lhs: Tlv.TypeCode, rhs: Tlv.NDNType) -> Bool {
+    return lhs.code != rhs.rawValue
 }

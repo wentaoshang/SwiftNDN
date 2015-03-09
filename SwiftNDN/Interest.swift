@@ -26,13 +26,13 @@ public class Interest: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.Exclude {
+                if block.type != NDNType.Exclude {
                     return nil
                 }
                 switch block.value {
                 case .Blocks(let blocks):
                     for blk in blocks {
-                        if blk.type == TypeCode.Any {
+                        if blk.type == NDNType.Any {
                             self.filter.append([])
                         } else if let nc = Name.Component(block: blk) {
                             self.filter.append(nc.value)
@@ -48,12 +48,12 @@ public class Interest: Tlv {
                 var blocks = [Block]()
                 for arr in self.filter {
                     if arr.isEmpty {
-                        blocks.append(Block(type: TypeCode.Any))
+                        blocks.append(Block(type: NDNType.Any))
                     } else if let ncb = Name.Component(bytes: arr).block {
                         blocks.append(ncb)
                     }
                 }
-                return Block(type: TypeCode.Exclude, blocks: blocks)
+                return Block(type: NDNType.Exclude, blocks: blocks)
             }
             
             // Return true if the component is covered by the exclude filter (i.e., should be excluded)
@@ -133,7 +133,7 @@ public class Interest: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.ChildSelector {
+                if block.type != NDNType.ChildSelector {
                     return nil
                 }
                 switch block.value {
@@ -145,14 +145,14 @@ public class Interest: Tlv {
             
             public override var block: Block? {
                 let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: TypeCode.ChildSelector, bytes: bytes)
+                return Block(type: NDNType.ChildSelector, bytes: bytes)
             }
         }
         
         public class MustBeFresh: Tlv {
             
             public override var block: Block? {
-                return Block(type: TypeCode.MustBeFresh)
+                return Block(type: NDNType.MustBeFresh)
             }
             
             public override init() {
@@ -161,7 +161,7 @@ public class Interest: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.MustBeFresh {
+                if block.type != NDNType.MustBeFresh {
                     return nil
                 }
             }
@@ -176,7 +176,7 @@ public class Interest: Tlv {
         }
         
         public override var block: Block? {
-            var blk = Block(type: TypeCode.Selectors)
+            var blk = Block(type: NDNType.Selectors)
             
             if let exBlock = self.exclude?.block {
                 blk.appendBlock(exBlock)
@@ -195,7 +195,7 @@ public class Interest: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.Selectors {
+            if block.type != NDNType.Selectors {
                 return nil
             }
             switch block.value {
@@ -235,7 +235,7 @@ public class Interest: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.Scope {
+            if block.type != NDNType.Scope {
                 return nil
             }
             switch block.value {
@@ -247,7 +247,7 @@ public class Interest: Tlv {
         
         public override var block: Block? {
             let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-            return Block(type: TypeCode.Scope, bytes: bytes)
+            return Block(type: NDNType.Scope, bytes: bytes)
         }
     }
     
@@ -265,7 +265,7 @@ public class Interest: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.InterestLifetime {
+            if block.type != NDNType.InterestLifetime {
                 return nil
             }
             switch block.value {
@@ -277,7 +277,7 @@ public class Interest: Tlv {
         
         public override var block: Block? {
             let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-            return Block(type: TypeCode.InterestLifetime, bytes: bytes)
+            return Block(type: NDNType.InterestLifetime, bytes: bytes)
         }
     }
     
@@ -286,7 +286,7 @@ public class Interest: Tlv {
         var value = [UInt8](count: 4, repeatedValue: 0)
         
         public override var block: Block? {
-            return Block(type: TypeCode.Nonce, bytes: self.value)
+            return Block(type: NDNType.Nonce, bytes: self.value)
         }
         
         public override init() {
@@ -301,7 +301,7 @@ public class Interest: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.Nonce {
+            if block.type != NDNType.Nonce {
                 return nil
             }
             switch block.value {
@@ -327,7 +327,7 @@ public class Interest: Tlv {
     }
     
     public override var block: Block? {
-        var blk = Block(type: TypeCode.Interest)
+        var blk = Block(type: NDNType.Interest)
         if let nameBlock = self.name.block {
             blk.appendBlock(nameBlock)
         } else {
@@ -353,7 +353,7 @@ public class Interest: Tlv {
     
     public init?(block: Block) {
         super.init()
-        if block.type != TypeCode.Interest {
+        if block.type != NDNType.Interest {
             return nil
         }
         switch block.value {

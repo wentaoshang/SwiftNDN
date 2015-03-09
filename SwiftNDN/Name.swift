@@ -18,7 +18,7 @@ public class Name: Tlv {
         let value = [UInt8]()
         
         public override var block: Block? {
-            return Block(type: TypeCode.NameComponent, bytes: self.value)
+            return Block(type: NDNType.NameComponent, bytes: self.value)
         }
         
         public init(bytes: [UInt8]) {
@@ -27,7 +27,7 @@ public class Name: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.NameComponent {
+            if block.type != NDNType.NameComponent {
                 return nil
             }
             switch block.value {
@@ -100,7 +100,7 @@ public class Name: Tlv {
     var components = [Component]()
     
     public override var block: Block? {
-        var blk = Block(type: TypeCode.Name)
+        var blk = Block(type: NDNType.Name)
         for comp in self.components {
             if let compBlock = comp.block {
                 blk.appendBlock(compBlock)
@@ -130,7 +130,7 @@ public class Name: Tlv {
 
     public init?(block: Block) {
         super.init()
-        if block.type != TypeCode.Name {
+        if block.type != NDNType.Name {
             return nil
         }
         switch block.value {

@@ -24,7 +24,7 @@ public class Data: Tlv {
             
             public override var block: Block? {
                 let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: TypeCode.ContentType, bytes: bytes)
+                return Block(type: NDNType.ContentType, bytes: bytes)
             }
             
             public override init() {
@@ -37,7 +37,7 @@ public class Data: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.ContentType {
+                if block.type != NDNType.ContentType {
                     return nil
                 }
                 switch block.value {
@@ -58,7 +58,7 @@ public class Data: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.FreshnessPeriod {
+                if block.type != NDNType.FreshnessPeriod {
                     return nil
                 }
                 switch block.value {
@@ -70,7 +70,7 @@ public class Data: Tlv {
             
             public override var block: Block? {
                 let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: TypeCode.FreshnessPeriod, bytes: bytes)
+                return Block(type: NDNType.FreshnessPeriod, bytes: bytes)
             }
         }
             
@@ -83,7 +83,7 @@ public class Data: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.MetaInfo {
+            if block.type != NDNType.MetaInfo {
                 return nil
             }
             switch block.value {
@@ -108,7 +108,7 @@ public class Data: Tlv {
             if let fpb = self.freshnessPeriod?.block {
                 blocks.append(fpb)
             }
-            return Block(type: TypeCode.MetaInfo, blocks: blocks)
+            return Block(type: NDNType.MetaInfo, blocks: blocks)
         }
     }
     
@@ -117,7 +117,7 @@ public class Data: Tlv {
         var value = [UInt8]()
         
         public override var block: Block? {
-            return Block(type: TypeCode.Content, bytes: value)
+            return Block(type: NDNType.Content, bytes: value)
         }
         
         public override init() {
@@ -130,7 +130,7 @@ public class Data: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.Content {
+            if block.type != NDNType.Content {
                 return nil
             }
             switch block.value {
@@ -163,7 +163,7 @@ public class Data: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.SignatureType {
+                if block.type != NDNType.SignatureType {
                     return nil
                 }
                 switch block.value {
@@ -175,7 +175,7 @@ public class Data: Tlv {
             
             public override var block: Block? {
                 let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: TypeCode.SignatureType, bytes: bytes)
+                return Block(type: NDNType.SignatureType, bytes: bytes)
             }
         }
         
@@ -194,7 +194,7 @@ public class Data: Tlv {
             
             public init?(block: Block) {
                 super.init()
-                if block.type != TypeCode.KeyLocator {
+                if block.type != NDNType.KeyLocator {
                     return nil
                 }
                 switch block.value {
@@ -215,7 +215,7 @@ public class Data: Tlv {
                 var blocks = [Block]()
                 if let nb = self.name.block {
                     blocks.append(nb)
-                    return Block(type: TypeCode.KeyLocator, blocks: blocks)
+                    return Block(type: NDNType.KeyLocator, blocks: blocks)
                 } else {
                     return nil
                 }
@@ -231,7 +231,7 @@ public class Data: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.SignatureInfo {
+            if block.type != NDNType.SignatureInfo {
                 return nil
             }
             switch block.value {
@@ -263,7 +263,7 @@ public class Data: Tlv {
             if let klb = self.keyLocator?.block {
                 blocks.append(klb)
             }
-            return Block(type: TypeCode.SignatureInfo, blocks: blocks)
+            return Block(type: NDNType.SignatureInfo, blocks: blocks)
         }
     }
     
@@ -272,7 +272,7 @@ public class Data: Tlv {
         var value = [UInt8]()
         
         public override var block: Block? {
-            return Block(type: TypeCode.SignatureValue, bytes: value)
+            return Block(type: NDNType.SignatureValue, bytes: value)
         }
         
         public override init() {
@@ -285,7 +285,7 @@ public class Data: Tlv {
         
         public init?(block: Block) {
             super.init()
-            if block.type != TypeCode.SignatureValue {
+            if block.type != NDNType.SignatureValue {
                 return nil
             }
             switch block.value {
@@ -308,7 +308,7 @@ public class Data: Tlv {
     
     public init?(block: Block) {
         super.init()
-        if block.type != TypeCode.Data {
+        if block.type != NDNType.Data {
             return nil
         }
         switch block.value {
@@ -372,7 +372,7 @@ public class Data: Tlv {
         } else {
             return nil
         }
-        return Block(type: TypeCode.Data, blocks: blocks)
+        return Block(type: NDNType.Data, blocks: blocks)
     }
     
     public func setContent(value: [UInt8]) {
