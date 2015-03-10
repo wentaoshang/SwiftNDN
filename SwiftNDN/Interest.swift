@@ -114,39 +114,21 @@ public class Interest: Tlv {
             }
         }
         
-        public class ChildSelector: Tlv {
+        public class ChildSelector: NonNegativeIntegerTlv {
             
             public struct Val {
                 public static let LeftmostChild: UInt64 = 0
                 public static let RightmostChild: UInt64 = 1
             }
             
-            var value: UInt64 = Val.LeftmostChild
-            
-            public override init() {
-                super.init()
+            override var defaultValue: UInt64 {
+                return Val.LeftmostChild
             }
             
-            public init(value: UInt64) {
-                self.value = value
+            override var tlvType: TypeCode {
+                return TypeCode(type: NDNType.ChildSelector)
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.ChildSelector {
-                    return nil
-                }
-                switch block.value {
-                case .RawBytes(let bytes):
-                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-                default: return nil
-                }
-            }
-            
-            public override var block: Block? {
-                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: NDNType.ChildSelector, bytes: bytes)
-            }
         }
         
         public class MustBeFresh: Tlv {
@@ -215,7 +197,7 @@ public class Interest: Tlv {
         }
     }
     
-    public class Scope: Tlv {
+    public class Scope: NonNegativeIntegerTlv {
         
         public struct Val {
             public static let LocalDaemon: UInt64 = 0
@@ -223,62 +205,26 @@ public class Interest: Tlv {
             public static let LocalHub: UInt64 = 2
         }
         
-        var value: UInt64 = Val.LocalHost
-        
-        public override init() {
-            super.init()
+        override var tlvType: TypeCode {
+            return TypeCode(type: NDNType.Scope)
         }
         
-        public init(value: UInt64) {
-            self.value = value
+        override var defaultValue: UInt64 {
+            return Val.LocalHost
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.Scope {
-                return nil
-            }
-            switch block.value {
-            case .RawBytes(let bytes):
-                self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-            default: return nil
-            }
-        }
-        
-        public override var block: Block? {
-            let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-            return Block(type: NDNType.Scope, bytes: bytes)
-        }
     }
     
-    public class InterestLifetime: Tlv {
+    public class InterestLifetime: NonNegativeIntegerTlv {
         
-        var value: UInt64 = 4000 // in ms
-        
-        public override init() {
-            super.init()
+        override var tlvType: TypeCode {
+            return TypeCode(type: NDNType.InterestLifetime)
         }
         
-        public init(value: UInt64) {
-            self.value = value
+        override var defaultValue: UInt64 {
+            return 4000
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.InterestLifetime {
-                return nil
-            }
-            switch block.value {
-            case .RawBytes(let bytes):
-                self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-            default: return nil
-            }
-        }
-        
-        public override var block: Block? {
-            let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-            return Block(type: NDNType.InterestLifetime, bytes: bytes)
-        }
     }
     
     public class Nonce: Tlv {
@@ -467,4 +413,71 @@ public class Interest: Tlv {
 
 public func == (lhs: Interest.Nonce, rhs: Interest.Nonce) -> Bool {
     return lhs.value == rhs.value
+}
+
+public func getTimeSinceEpochInMS() -> UInt64 {
+    var now = mach_absolute_time()
+    var tinfo = mach_timebase_info(numer: 1, denom: 1)
+    mach_timebase_info(&tinfo)
+    return now * UInt64(tinfo.numer) / UInt64(tinfo.denom) / 1000000
+}
+
+public class SignedInterest: Interest {
+    
+    public var timestamp: UInt64
+    public var randomValue: UInt64
+    public var signatureInfo: Data.SignatureInfo
+    public var signatureValue: Data.SignatureValue
+    
+    public init(name: Name) {
+        self.timestamp = getTimeSinceEpochInMS()
+        self.randomValue = UInt64(arc4random())
+        self.signatureInfo = Data.SignatureInfo()
+        self.signatureValue = Data.SignatureValue()
+        super.init()
+        self.name = name
+        //FIXME: fill with fake signature for now!!!
+        self.signatureValue.value = [UInt8](count: 32, repeatedValue: 0x77)
+    }
+    
+    public var fullName: Name? {
+        if let sigInfo = signatureInfo.wireEncode() {
+            if let sigVal = signatureValue.wireEncode() {
+                return Name(name: self.name)
+                    .appendNumber(timestamp)
+                    .appendNumber(randomValue)
+                    .appendComponent(sigInfo)
+                    .appendComponent(sigVal)
+            }
+        }
+        return nil
+    }
+    
+    public override init?(block: Block) {
+        self.timestamp = 0
+        self.randomValue = 0
+        self.signatureInfo = Data.SignatureInfo()
+        self.signatureValue = Data.SignatureValue()
+        super.init(block: block)
+        if self.name.size < 4 {
+            // Signed Interest name should have at least 4 components
+            return nil
+        }
+        self.timestamp = Buffer.nonNegativeIntegerFromByteArray(self.name.getComponentByIndex(-4)!.value)
+        self.randomValue = Buffer.nonNegativeIntegerFromByteArray(self.name.getComponentByIndex(-3)!.value)
+        //FIXME: parse SignatureInfo and SignatureValue
+        self.name = self.name.getPrefix(self.name.size - 4)
+    }
+    
+    public override var block: Block? {
+        if let fn = self.fullName {
+            var oldName = self.name
+            self.name = fn
+            var blk = super.block
+            self.name = oldName
+            return blk
+        } else {
+            return nil
+        }
+    }
 }

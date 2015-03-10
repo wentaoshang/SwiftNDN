@@ -298,6 +298,16 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x0A])))
     }
     
+    func testNonNegativeIntegerTlv() {
+        let ilt0 = Interest.InterestLifetime()
+        let ilt0Encode = ilt0.wireEncode()!
+        XCTAssert(ilt0Encode == [12, 2, 0x0F, 0xA0])
+        
+        let ilt1 = Interest.InterestLifetime(value: 0x123456)
+        let ilt1Encode = ilt1.wireEncode()!
+        XCTAssert(ilt1Encode == [12, 4, 0, 0x12, 0x34, 0x56])
+    }
+    
     func testInterest() {
         var i0 = Interest()
         let i0Encode = i0.wireEncode()
@@ -311,12 +321,14 @@ class SwiftNDNTests: XCTestCase {
         i2.name = Name(url: "/a/b/c/%00%01")!
         i2.setChildSelector(Interest.Selectors.ChildSelector.Val.LeftmostChild)
         i2.setMustBeFresh()
+        i2.setInterestLifetime(2000)
         let i2Encode = i2.wireEncode()
         XCTAssert(i2Encode != nil)
         var i3 = Interest.wireDecode(i2Encode!)
         XCTAssert(i3 != nil)
         XCTAssert(i3!.name.toUri() == "/a/b/c/%00%01")
         XCTAssert((i3!.getChildSelector())! == Interest.Selectors.ChildSelector.Val.LeftmostChild)
+        XCTAssert((i3!.getInterestLifetime())! == 2000)
         
         var i4 = Interest()
         i4.name = Name(url: "/a/b/c")!

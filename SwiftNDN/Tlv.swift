@@ -38,6 +38,9 @@ public class Tlv: Printable {
         case KeyDigest = 29
         case ImplicitSha256DigestComponent = 32
         
+        // Control Parameters
+        case ControlParameters = 104
+        
         public var description: String {
             get {
                 switch self {
@@ -67,6 +70,7 @@ public class Tlv: Printable {
                 case .KeyLocator: return "KeyLocator"
                 case .KeyDigest: return "KeyDigest"
                 case .ImplicitSha256DigestComponent: return "DigestComponent"
+                case .ControlParameters: return "ControlParameters"
                 }
             }
         }
@@ -99,6 +103,7 @@ public class Tlv: Printable {
             case .KeyLocator: return true
             case .KeyDigest: return false
             case .ImplicitSha256DigestComponent: return false
+            case .ControlParameters: return true
             }
         }
     }
@@ -106,6 +111,11 @@ public class Tlv: Printable {
     public class TypeCode: Printable {
         public let code: UInt64
         public let isNested: Bool
+        
+        public init(type: NDNType) {
+            self.code = type.rawValue
+            self.isNested = type.isNested()
+        }
         
         public init(code: UInt64) {
             if let ndnType = NDNType(rawValue: code) {
@@ -121,7 +131,7 @@ public class Tlv: Printable {
             if let ndnType = NDNType(rawValue: self.code) {
                 return ndnType.description
             } else {
-                return "UnknownType(\(self.code))"
+                return "Type(code: \(self.code), nested: \(self.isNested))"
             }
         }
     }
@@ -334,10 +344,57 @@ public func == (lhs: Tlv, rhs: Tlv) -> Bool {
     return false
 }
 
+public func == (lhs: Tlv.TypeCode, rhs: Tlv.TypeCode) -> Bool {
+    return lhs.code == rhs.code
+}
+
+public func != (lhs: Tlv.TypeCode, rhs: Tlv.TypeCode) -> Bool {
+    return lhs.code != rhs.code
+}
+
 public func == (lhs: Tlv.TypeCode, rhs: Tlv.NDNType) -> Bool {
     return lhs.code == rhs.rawValue
 }
 
 public func != (lhs: Tlv.TypeCode, rhs: Tlv.NDNType) -> Bool {
     return lhs.code != rhs.rawValue
+}
+
+public class NonNegativeIntegerTlv: Tlv {
+    
+    var tlvType: TypeCode {
+        return TypeCode(code: 0)
+    }
+    
+    var defaultValue: UInt64 {
+        return 0
+    }
+    
+    var value: UInt64 = 0
+    
+    public override init() {
+        super.init()
+        self.value = self.defaultValue
+    }
+    
+    public init(value: UInt64) {
+        self.value = value
+    }
+    
+    public init?(block: Block) {
+        super.init()
+        if block.type != self.tlvType {
+            return nil
+        }
+        switch block.value {
+        case .RawBytes(let bytes):
+            self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
+        default: return nil
+        }
+    }
+    
+    public override var block: Block? {
+        let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
+        return Block(type: self.tlvType, bytes: bytes)
+    }
 }

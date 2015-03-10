@@ -12,7 +12,7 @@ public class Data: Tlv {
     
     public class MetaInfo: Tlv {
         
-        public class ContentType: Tlv {
+        public class ContentType: NonNegativeIntegerTlv {
             
             struct Val {
                 static let Blob: UInt64 = 0
@@ -20,58 +20,22 @@ public class Data: Tlv {
                 static let Key:  UInt64 = 2
             }
             
-            var value: UInt64 = Val.Blob
-            
-            public override var block: Block? {
-                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: NDNType.ContentType, bytes: bytes)
+            override var tlvType: TypeCode {
+                return TypeCode(type: NDNType.ContentType)
             }
             
-            public override init() {
-                super.init()
+            override var defaultValue: UInt64 {
+                return 0
             }
             
-            public init(value: UInt64) {
-                self.value = value
-            }
-            
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.ContentType {
-                    return nil
-                }
-                switch block.value {
-                case .RawBytes(let bytes):
-                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-                default: return nil
-                }
-            }
         }
         
-        public class FreshnessPeriod: Tlv {
+        public class FreshnessPeriod: NonNegativeIntegerTlv {
             
-            var value: UInt64 = 0
-            
-            public init(value: UInt64) {
-                self.value = value
+            override var tlvType: TypeCode {
+                return TypeCode(type: NDNType.FreshnessPeriod)
             }
-            
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.FreshnessPeriod {
-                    return nil
-                }
-                switch block.value {
-                case .RawBytes(let bytes):
-                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-                default: return nil
-                }
-            }
-            
-            public override var block: Block? {
-                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: NDNType.FreshnessPeriod, bytes: bytes)
-            }
+
         }
             
         var contentType: ContentType?
