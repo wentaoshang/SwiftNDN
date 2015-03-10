@@ -39,7 +39,16 @@ public class Tlv: Printable {
         case ImplicitSha256DigestComponent = 32
         
         // Control Parameters
+        case ControlResponse = 101
+        case StatusCode = 102
+        case StatusText = 103
         case ControlParameters = 104
+        case FaceID = 105
+        case Cost = 106
+        case Flags = 108
+        case ExpirationPeriod = 109
+        case LocalControlFeature = 110
+        case Origin = 111
         
         public var description: String {
             get {
@@ -71,6 +80,15 @@ public class Tlv: Printable {
                 case .KeyDigest: return "KeyDigest"
                 case .ImplicitSha256DigestComponent: return "DigestComponent"
                 case .ControlParameters: return "ControlParameters"
+                case .FaceID: return "FaceID"
+                case .LocalControlFeature: return "LocalControlFeature"
+                case .Origin: return "Origin"
+                case .Cost: return "Cost"
+                case .Flags: return "Flags"
+                case .ExpirationPeriod: return "ExpirationPeriod"
+                case .ControlResponse: return "ControlResponse"
+                case .StatusCode: return "StatusCode"
+                case .StatusText: return "StatusText"
                 }
             }
         }
@@ -80,30 +98,14 @@ public class Tlv: Printable {
             case .Interest: return true
             case .Data: return true
             case .Name: return true
-            case .NameComponent: return false
             case .Selectors: return true
-            case .Nonce: return false
-            case .Scope: return false
-            case .InterestLifetime: return false
-            case .MinSuffixComponent: return false
-            case .MaxSuffixComponent: return false
-            case .PublisherPublicKeyLocator: return false
             case .Exclude: return true
-            case .ChildSelector: return false
-            case .MustBeFresh: return false
-            case .Any: return false
             case .MetaInfo: return true
-            case .Content: return false
             case .SignatureInfo: return true
-            case .SignatureValue: return false
-            case .ContentType: return false
-            case .FreshnessPeriod: return false
-            case .FinalBlockId: return false
-            case .SignatureType: return false
             case .KeyLocator: return true
-            case .KeyDigest: return false
-            case .ImplicitSha256DigestComponent: return false
             case .ControlParameters: return true
+            case .ControlResponse: return true
+            default: return false
             }
         }
     }
@@ -396,5 +398,51 @@ public class NonNegativeIntegerTlv: Tlv {
     public override var block: Block? {
         let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
         return Block(type: self.tlvType, bytes: bytes)
+    }
+}
+
+public class StringTlv: Tlv {
+    
+    var tlvType: TypeCode {
+        return TypeCode(code: 0)
+    }
+    
+    var defaultValue: String {
+        return "SwiftNDN"
+    }
+    
+    var value: String = ""
+    
+    public override init() {
+        super.init()
+        self.value = self.defaultValue
+    }
+    
+    public init(value: String) {
+        self.value = value
+    }
+    
+    public init?(block: Block) {
+        super.init()
+        if block.type != self.tlvType {
+            return nil
+        }
+        switch block.value {
+        case .RawBytes(let bytes):
+            if let str = Buffer.stringFromByteArray(bytes) {
+                self.value = str
+            } else {
+                return nil
+            }
+        default: return nil
+        }
+    }
+    
+    public override var block: Block? {
+        if let bytes = Buffer.byteArrayFromString(value) {
+            return Block(type: self.tlvType, bytes: bytes)
+        } else {
+            return nil
+        }
     }
 }

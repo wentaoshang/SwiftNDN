@@ -180,24 +180,48 @@ public class Name: Tlv {
         }
     }
     
-    public func appendComponent(component: Component) {
+    public func appendComponent(component: Component) -> Name {
         self.components.append(component)
+        return self
     }
     
-    public func appendComponent(url: String) -> Bool {
+    public func appendComponent(bytes: [UInt8]) -> Name {
+        self.components.append(Component(bytes: bytes))
+        return self
+    }
+    
+    public func appendComponent(url: String) -> Name? {
         if let c = Component(url: url) {
             self.components.append(c)
-            return true
+            return self
         } else {
-            return false
+            return nil
         }
     }
     
-    public func getComponentByIndex(index: Int) -> Component? {
-        if index < self.components.count {
+    public func appendNumber(number: UInt64) -> Name {
+        var arr = Buffer.byteArrayFromNonNegativeInteger(number)
+        return self.appendComponent(arr)
+    }
+    
+    public func getComponentByIndex(var index: Int) -> Component? {
+        if index < 0 {
+            index = self.components.count + index
+        }
+        if index < self.components.count && index >= 0 {
             return self.components[index]
         } else {
             return nil
+        }
+    }
+    
+    public func getPrefix(length: Int) -> Name {
+        if length >= self.size {
+            return Name(name: self)
+        } else {
+            var prefix = Name()
+            prefix.components = [Component](self.components[0..<length])
+            return prefix
         }
     }
 

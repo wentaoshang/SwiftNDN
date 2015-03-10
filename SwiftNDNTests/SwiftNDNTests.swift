@@ -635,8 +635,68 @@ class SwiftNDNTests: XCTestCase {
         }
     }
     
+    class RibRegisterTestClient: FaceDelegate {
+        
+        var face: Face!
+        
+        var registerSuccessExpectation: XCTestExpectation?
+        var receiveInterestExpectation: XCTestExpectation?
+        var closeExpectation: XCTestExpectation?
+        
+        init() {
+            face = Face(delegate: self, host: "127.0.0.1", port: 12345)
+        }
+        
+        func onOpen() {
+            let prefix = Name(url: "/swift/ndn/face/test")!
+            face.registerPrefix(prefix,
+                onInterest: { [unowned self] i in
+                    self.onInterest(i)
+                }, onRegisterSuccess: { [unowned self] _ in
+                    self.onRegSuccess()
+                }, onRegisterFailure: { [unowned self] msg in
+                    self.onRegFailure(msg)
+            })
+        }
+        
+        func onInterest(interest: Interest) {
+            if interest.name.toUri() == "/swift/ndn/face/test/001" {
+                receiveInterestExpectation?.fulfill()
+            } else {
+                XCTFail("wrong interest received")
+            }
+            self.close()
+        }
+        
+        func onRegSuccess() {
+            self.registerSuccessExpectation?.fulfill()
+        }
+        
+        func onRegFailure(msg: String) {
+            println("RibRegisterTestClient: register prefix error: \(msg)")
+            XCTFail("register prefix")
+        }
+        
+        func onClose() {
+            //println("RibRegisterTestClient close")
+            closeExpectation?.fulfill()
+        }
+        
+        func onError(reason: String) {
+            //println("RibRegisterTestClient error: \(reason)")
+        }
+        
+        func run() {
+            face.open()
+        }
+        
+        func close() {
+            face.close()
+        }
+    }
+    
     func testFace() {
-        var server = FaceTestServer()
+        var server: FaceTestServer! = FaceTestServer()
         server.start()
         
         var client: FaceTestClient! = FaceTestClient()
@@ -647,11 +707,32 @@ class SwiftNDNTests: XCTestCase {
         
         waitForExpectationsWithTimeout(6, handler: { error in
             if let err = error {
-                println("testTimer: \(err.localizedDescription)")
+                println("testFace: \(err.localizedDescription)")
             }
         })
         
         client = nil
+        server = nil
+    }
+    
+    func testFace2() {
+        var server2: RibRegisterTestServer! = RibRegisterTestServer()
+        server2.start()
+        
+        var client2: RibRegisterTestClient! = RibRegisterTestClient()
+        client2.registerSuccessExpectation = expectationWithDescription("register prefix")
+        client2.receiveInterestExpectation = expectationWithDescription("receive interest")
+        client2.closeExpectation = expectationWithDescription("close client")
+        client2.run()
+        
+        waitForExpectationsWithTimeout(6, handler: { error in
+            if let err = error {
+                println("testFace: \(err.localizedDescription)")
+            }
+        })
+        
+        client2 = nil
+        server2 = nil
     }
     
 //    func testPerformanceExample() {

@@ -55,6 +55,8 @@ public class Face: AsyncTransportDelegate {
     public typealias OnDataCallback = (Interest, Data) -> Void
     public typealias OnTimeoutCallback = (Interest) -> Void
     public typealias OnInterestCallback = (Interest) -> Void
+    public typealias OnRegisterSuccessCallback = (Name) -> Void
+    public typealias OnRegisterFailureCallback = (String) -> Void
     
     class ExpressedInterestTable {
         
@@ -114,6 +116,37 @@ public class Face: AsyncTransportDelegate {
     
     var expressedInterests = ExpressedInterestTable()
     
+    class RegisteredPrefixTable {
+        
+        struct Entry {
+            var prefix: Name
+            var onInterest: OnInterestCallback?
+        }
+        
+        var table = LinkedList<Entry>()
+        
+        func append(prefix: Name, onInterestCb: OnInterestCallback?) -> ListEntry<Entry>
+        {
+            let entry = Entry(prefix: prefix, onInterest: onInterestCb)
+            let lentry = table.appendAtTail(entry)
+            return lentry
+        }
+        
+        func dispatchInterest(interest: Interest) {
+            table.forEachEntry() { listEntry in
+                if let entry = listEntry.value {
+                    if entry.prefix.isPrefixOf(interest.name) {
+                        if let onInterest = entry.onInterest {
+                            onInterest(interest)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    var registeredPrefixes = RegisteredPrefixTable()
+
     public init(delegate: FaceDelegate) {
         self.delegate = delegate
         self.transport = AsyncTcpTransport(face: self, host: host, port: port)
@@ -148,18 +181,58 @@ public class Face: AsyncTransportDelegate {
     
     public func onMessage(block: Tlv.Block) {
         if let interest = Interest(block: block) {
-            
+            registeredPrefixes.dispatchInterest(interest)
         } else if let data = Data(block: block) {
             expressedInterests.consumeWithData(data)
         }
     }
     
     public func expressInterest(interest: Interest,
-        onData: OnDataCallback?, onTimeout: OnTimeoutCallback?)
+        onData: OnDataCallback?, onTimeout: OnTimeoutCallback?) -> Bool
     {
         if let wire = interest.wireEncode() {
             expressedInterests.append(interest, onDataCb: onData, onTimeoutCb: onTimeout)
             transport.send(wire)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public func registerPrefix(prefix: Name, onInterest: OnInterestCallback?,
+        onRegisterSuccess: OnRegisterSuccessCallback?,
+        onRegisterFailure: OnRegisterFailureCallback?)
+    {
+        // Append to table first
+        let lentry = registeredPrefixes.append(prefix, onInterest)
+
+        // Prepare command interest
+        var param = ControlParameters()
+        param.name = prefix
+        var nfdRibRegisterInterest = ControlCommand(prefix: Name(url: "/localhost/nfd")!,
+            module: "rib", verb: "register", param: param)
+        let ret = self.expressInterest(nfdRibRegisterInterest, onData: { [unowned self] _, d in
+            let content = d.getContent()
+            if let response = ControlResponse.wireDecode(content) {
+                if response.statusCode.value == 200 {
+                    onRegisterSuccess?(prefix)
+                } else {
+                    onRegisterFailure?("Register command failure")
+                }
+            } else {
+                onRegisterFailure?("Malformat control response")
+            }
+        }, onTimeout: { [unowned self] _ in
+            onRegisterFailure?("Command Interest timeout")
+            lentry.detach()
+        })
+        
+        if !ret {
+            // Failed in sending the command interest
+            if let onRegFailure = onRegisterFailure {
+                onRegFailure("Failed to send Command Interest")
+            }
+            lentry.detach()
         }
     }
 }
