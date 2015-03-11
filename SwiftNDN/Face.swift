@@ -261,4 +261,13 @@ public class Face: AsyncTransportDelegate {
             lentry.detach()
         }
     }
+    
+    public func put(data: Data) -> Bool {
+        if let wire = data.wireEncode() {
+            transport.send(wire)
+            return true
+        } else {
+            return false
+        }
+    }
 }
