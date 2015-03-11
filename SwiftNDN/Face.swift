@@ -12,6 +12,7 @@ public class Timer {
     
     var timer: dispatch_source_t!
     var callback: (() -> Void)?
+    var isSet = false
     
     public init?() {
         timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue())
@@ -20,11 +21,19 @@ public class Timer {
         }
     }
     
+    deinit {
+        if !isSet {
+            // Need to balance the resume/suspend count before releasing the timer
+            dispatch_resume(self.timer);
+        }
+    }
+    
     public func setTimeout(ms: UInt64, callback: () -> Void) {
         self.callback = callback
+        self.isSet = true
         var delay = dispatch_time(DISPATCH_TIME_NOW, Int64(ms) * 1000000)
-        dispatch_source_set_timer(timer, delay, UInt64.max, ms * 100000)
-        dispatch_source_set_event_handler(timer, { [unowned self] in self.handler() })
+        dispatch_source_set_timer(self.timer, delay, UInt64.max, ms * 100000)
+        dispatch_source_set_event_handler(self.timer, { [unowned self] in self.handler() })
         dispatch_resume(self.timer)
     }
     
@@ -51,6 +60,15 @@ public class Face: AsyncTransportDelegate {
     
     var host = "127.0.0.1"
     var port: UInt16 = 6363
+    
+    var isConnectedToLocalNFD: Bool {
+        if let remoteIP = transport?.socket?.connectedHost {
+            if remoteIP == "127.0.0.1" {
+                return true
+            }
+        }
+        return false
+    }
     
     public typealias OnDataCallback = (Interest, Data) -> Void
     public typealias OnTimeoutCallback = (Interest) -> Void
@@ -209,7 +227,15 @@ public class Face: AsyncTransportDelegate {
         // Prepare command interest
         var param = ControlParameters()
         param.name = prefix
-        var nfdRibRegisterInterest = ControlCommand(prefix: Name(url: "/localhost/nfd")!,
+        
+        var ribRegPrefix: Name
+        if isConnectedToLocalNFD {
+            ribRegPrefix = Name(url: "/localhost/nfd")!
+        } else {
+            ribRegPrefix = Name(url: "/localhop/nfd")!
+        }
+        
+        var nfdRibRegisterInterest = ControlCommand(prefix: ribRegPrefix,
             module: "rib", verb: "register", param: param)
         let ret = self.expressInterest(nfdRibRegisterInterest, onData: { [unowned self] _, d in
             let content = d.getContent()

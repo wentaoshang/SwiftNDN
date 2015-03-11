@@ -511,6 +511,10 @@ class SwiftNDNTests: XCTestCase {
                 }
             })
         }
+        
+        var timer1: Timer? = Timer()
+        timer1 = nil
+        XCTAssert(true, "should not crash")
     }
     
     func testLinkedList() {
