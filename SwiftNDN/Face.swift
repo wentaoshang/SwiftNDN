@@ -13,6 +13,7 @@ public class Timer {
     var timer: dispatch_source_t!
     var callback: (() -> Void)?
     var isSet = false
+    var isFired = false
     
     public init?() {
         timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue())
@@ -23,6 +24,10 @@ public class Timer {
     
     deinit {
         if !isSet {
+            if !isFired {
+                // Cancel the unfired event before releasing the resource
+                self.cancel()
+            }
             // Need to balance the resume/suspend count before releasing the timer
             dispatch_resume(self.timer);
         }
@@ -38,8 +43,9 @@ public class Timer {
     }
     
     private func handler() {
+        self.isFired = true
         self.callback?()
-        dispatch_source_cancel(self.timer)
+        self.cancel()
     }
     
     public func cancel() {
@@ -255,9 +261,7 @@ public class Face: AsyncTransportDelegate {
         
         if !ret {
             // Failed in sending the command interest
-            if let onRegFailure = onRegisterFailure {
-                onRegFailure("Failed to send Command Interest")
-            }
+            onRegisterFailure?("Failed to send Command Interest")
             lentry.detach()
         }
     }

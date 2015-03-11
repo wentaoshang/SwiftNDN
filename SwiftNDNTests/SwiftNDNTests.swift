@@ -515,6 +515,24 @@ class SwiftNDNTests: XCTestCase {
         var timer1: Timer? = Timer()
         timer1 = nil
         XCTAssert(true, "should not crash")
+        
+        var waitForTimerExpectation = expectationWithDescription("wait for cancelled timer")
+        var timer2Wait: Timer! = Timer()
+        timer2Wait.setTimeout(1000) {
+            XCTFail("Handler should not be called")
+        }
+        timer2Wait = nil  // should cancel the timer in deinitializer
+        
+        var waitingTimer: Timer! = Timer()
+        waitingTimer.setTimeout(2000) {
+            waitForTimerExpectation.fulfill()
+        }
+        
+        waitForExpectationsWithTimeout(3, handler: { error in
+            if let err = error {
+                println("testTimer: \(err.localizedDescription)")
+            }
+        })
     }
     
     func testLinkedList() {
