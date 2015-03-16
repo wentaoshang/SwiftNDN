@@ -67,6 +67,8 @@ public class Face: AsyncTransportDelegate {
     var host = "127.0.0.1"
     var port: UInt16 = 6363
     
+    public var isOpen: Bool = false
+    
     var isConnectedToLocalNFD: Bool {
         if let remoteIP = transport?.socket?.connectedHost {
             if remoteIP == "127.0.0.1" {
@@ -184,19 +186,24 @@ public class Face: AsyncTransportDelegate {
     }
     
     public func onOpen() {
+        self.isOpen = true
         self.delegate.onOpen()
     }
     
     public func onClose() {
+        self.isOpen = false
         self.delegate.onClose()
     }
     
     public func onError(reason: String) {
+        //TODO: close face upon any error??
         self.delegate.onError(reason)
     }
     
     public func open() {
-        transport.connect()
+        if !isOpen {
+            transport.connect()
+        }
     }
 
     public func close() {
@@ -214,6 +221,10 @@ public class Face: AsyncTransportDelegate {
     public func expressInterest(interest: Interest,
         onData: OnDataCallback?, onTimeout: OnTimeoutCallback?) -> Bool
     {
+        if !isOpen {
+            return false
+        }
+        
         if let wire = interest.wireEncode() {
             expressedInterests.append(interest, onDataCb: onData, onTimeoutCb: onTimeout)
             transport.send(wire)
@@ -227,6 +238,10 @@ public class Face: AsyncTransportDelegate {
         onRegisterSuccess: OnRegisterSuccessCallback?,
         onRegisterFailure: OnRegisterFailureCallback?)
     {
+        if !isOpen {
+            return
+        }
+        
         // Append to table first
         let lentry = registeredPrefixes.append(prefix, onInterest)
 

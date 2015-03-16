@@ -678,6 +678,7 @@ class SwiftNDNTests: XCTestCase {
         }
         
         func onOpen() {
+            XCTAssertTrue(face.isOpen)
             let prefix = Name(url: "/swift/ndn/face/test")!
             face.registerPrefix(prefix,
                 onInterest: { [unowned self] i in
