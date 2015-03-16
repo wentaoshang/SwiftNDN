@@ -250,6 +250,14 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(ex0.matchesComponent(Name.Component(bytes: [0x03])))
         XCTAssert(ex0.matchesComponent(Name.Component(bytes: [0x04])))
         
+        let ex01 = Interest.Selectors.Exclude()
+        ex01.appendComponent(Name.Component(bytes: [0x03]))
+        ex01.appendAny()
+        XCTAssert(!ex01.matchesComponent(Name.Component(bytes: [0x02])))
+        XCTAssert(ex01.matchesComponent(Name.Component(bytes: [0x03])))
+        XCTAssert(ex01.matchesComponent(Name.Component(bytes: [0x04])))
+
+        
         let f1: [[UInt8]] = [[], [0x03]]
         let ex1 = Interest.Selectors.Exclude(filter: f1)
         XCTAssert(ex1.matchesComponent(Name.Component(bytes: [0x02])))

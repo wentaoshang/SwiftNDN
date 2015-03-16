@@ -55,6 +55,14 @@ public class Interest: Tlv {
                 }
                 return Block(type: NDNType.Exclude, blocks: blocks)
             }
+
+            public func appendAny() {
+                self.filter.append([])
+            }
+            
+            public func appendComponent(component: Name.Component) {
+                self.filter.append(component.value)
+            }
             
             // Return true if the component is covered by the exclude filter (i.e., should be excluded)
             // Return false if not covered
