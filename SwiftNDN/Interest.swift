@@ -336,6 +336,13 @@ public class Interest: Tlv {
         }
     }
     
+    public func setExclude(filter: Selectors.Exclude) {
+        if self.selectors == nil {
+            self.selectors = Selectors()
+        }
+        self.selectors!.exclude = filter
+    }
+    
     public func setExclude(value: [[UInt8]]) {
         if self.selectors == nil {
             self.selectors = Selectors()
