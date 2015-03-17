@@ -49,6 +49,19 @@ public class Tlv: Printable {
         case ExpirationPeriod = 109
         case LocalControlFeature = 110
         case Origin = 111
+        case Uri = 114
+        
+        case FaceStatus = 128
+        case LocalUri = 129
+        case FaceScope = 132
+        case FacePersistency = 133
+        case LinkType = 134
+        case NInInterests = 144
+        case NInDatas = 145
+        case NOutInterests = 146
+        case NOutDatas = 147
+        case NInBytes = 148
+        case NOutBytes = 149
         
         public var description: String {
             get {
@@ -89,6 +102,18 @@ public class Tlv: Printable {
                 case .ControlResponse: return "ControlResponse"
                 case .StatusCode: return "StatusCode"
                 case .StatusText: return "StatusText"
+                case .Uri: return "Uri"
+                case .FaceStatus: return "FaceStatus"
+                case .LocalUri: return "LocalUri"
+                case .FaceScope: return "FaceScope"
+                case .FacePersistency: return "FacePersistency"
+                case .LinkType: return "LinkType"
+                case .NInInterests: return "NInInterests"
+                case .NInDatas: return "NInDatas"
+                case .NOutInterests: return "NOutInterests"
+                case .NOutDatas: return "NOutDatas"
+                case .NInBytes: return "NInBytes"
+                case .NOutBytes: return "NOutBytes"
                 }
             }
         }
@@ -102,9 +127,11 @@ public class Tlv: Printable {
             case .Exclude: return true
             case .MetaInfo: return true
             case .SignatureInfo: return true
+            case .FinalBlockId: return true
             case .KeyLocator: return true
             case .ControlParameters: return true
             case .ControlResponse: return true
+            case .FaceStatus: return true
             default: return false
             }
         }
@@ -372,7 +399,7 @@ public class NonNegativeIntegerTlv: Tlv {
         return 0
     }
     
-    var value: UInt64 = 0
+    public var value: UInt64 = 0
     
     public override init() {
         super.init()
@@ -411,7 +438,7 @@ public class StringTlv: Tlv {
         return "SwiftNDN"
     }
     
-    var value: String = ""
+    public var value: String = ""
     
     public override init() {
         super.init()

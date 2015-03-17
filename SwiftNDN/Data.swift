@@ -37,9 +37,52 @@ public class Data: Tlv {
             }
 
         }
+        
+        public class FinalBlockID: Tlv {
+            
+            var value = Name.Component(bytes: [0, 0])
+            
+            public override var block: Block? {
+                var blocks = [Block]()
+                if let ncb = value.block {
+                    blocks.append(ncb)
+                } else {
+                    return nil
+                }
+                return Block(type: NDNType.FinalBlockId, blocks: blocks)
+            }
+            
+            public override init() {
+                super.init()
+            }
+            
+            public init(component: Name.Component) {
+                self.value = component
+            }
+            
+            public init?(block: Block) {
+                super.init()
+                if block.type != NDNType.FinalBlockId {
+                    return nil
+                }
+                switch block.value {
+                case .Blocks(let blocks):
+                    if blocks.count != 1 {
+                        return nil
+                    }
+                    if let nc = Name.Component(block: blocks[0]) {
+                        self.value = nc
+                    } else {
+                        return nil
+                    }
+                default: return nil
+                }
+            }
+        }
             
         var contentType: ContentType?
         var freshnessPeriod: FreshnessPeriod?
+        var finalBlockID: FinalBlockID?
         
         public override init() {
             super.init()
@@ -58,6 +101,8 @@ public class Data: Tlv {
                         self.contentType = ct
                     } else if let fp = FreshnessPeriod(block: blk) {
                         self.freshnessPeriod = fp
+                    } else if let fbi = FinalBlockID(block: blk) {
+                        self.finalBlockID = fbi
                     }
                 }
             default: return nil
@@ -71,6 +116,9 @@ public class Data: Tlv {
             }
             if let fpb = self.freshnessPeriod?.block {
                 blocks.append(fpb)
+            }
+            if let fbb = self.finalBlockID?.block {
+                blocks.append(fbb)
             }
             return Block(type: NDNType.MetaInfo, blocks: blocks)
         }
@@ -361,6 +409,14 @@ public class Data: Tlv {
     
     public func getContentType() -> UInt64? {
         return self.metaInfo.contentType?.value
+    }
+    
+    public func setFinalBlockID(value: Name.Component) {
+        self.metaInfo.finalBlockID = MetaInfo.FinalBlockID(component: value)
+    }
+    
+    public func getFinalBlockID() -> Name.Component? {
+        return self.metaInfo.finalBlockID?.value
     }
     
     func setSignature(value: [UInt8]) {

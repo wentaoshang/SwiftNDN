@@ -248,3 +248,254 @@ public class ControlCommand: SignedInterest {
         self.name = self.name.getPrefix(self.name.size - 3)
     }
 }
+
+public class Uri: StringTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.Uri)
+    }
+    
+    override var defaultValue: String {
+        return "/"
+    }
+}
+
+public class LocalUri: StringTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.LocalUri)
+    }
+    
+    override var defaultValue: String {
+        return "/"
+    }
+}
+
+public class FaceScope: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.FaceScope)
+    }
+    
+    public struct Val {
+        public static let NonLocal: UInt64 = 0
+        public static let Local: UInt64 = 1
+    }
+    
+    override var defaultValue: UInt64 {
+        return Val.NonLocal
+    }
+}
+
+public class FacePersistency: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.FacePersistency)
+    }
+    
+    public struct Val {
+        public static let Persistent: UInt64 = 0
+        public static let OnDemand: UInt64 = 1
+        public static let Permanent: UInt64 = 2
+    }
+    
+    override var defaultValue: UInt64 {
+        return Val.Permanent
+    }
+}
+
+public class LinkType: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.LinkType)
+    }
+    
+    public struct Val {
+        public static let Point2Point: UInt64 = 0
+        public static let MultiAccess: UInt64 = 1
+    }
+    
+    override var defaultValue: UInt64 {
+        return Val.Point2Point
+    }
+}
+
+public class NInInterests: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NInInterests)
+    }
+}
+
+public class NInDatas: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NInDatas)
+    }
+}
+
+public class NOutInterests: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NOutInterests)
+    }
+}
+
+public class NOutDatas: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NOutDatas)
+    }
+}
+
+public class NInBytes: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NInBytes)
+    }
+}
+
+public class NOutBytes: NonNegativeIntegerTlv {
+    override var tlvType: TypeCode {
+        return TypeCode(type: NDNType.NOutBytes)
+    }
+}
+
+public class FaceStatus: Tlv {
+    
+    public var faceID = FaceID()
+    public var uri = Uri()
+    public var localUri = LocalUri()
+    public var expirePeriod: ExpirationPeriod?
+    public var faceScope = FaceScope()
+    public var facePersistency = FacePersistency()
+    public var linkType = LinkType()
+    public var nInInterests = NInInterests()
+    public var nInDatas = NInDatas()
+    public var nOutInterests = NOutInterests()
+    public var nOutDatas = NOutDatas()
+    public var nInBytes = NInBytes()
+    public var nOutBytes = NOutBytes()
+    
+    public override var block: Block? {
+        var blocks = [Block]()
+        if let fib = faceID.block {
+            blocks.append(fib)
+        } else {
+            return nil
+        }
+        if let ub = uri.block {
+            blocks.append(ub)
+        } else {
+            return nil
+        }
+        if let lub = localUri.block {
+            blocks.append(lub)
+        } else {
+            return nil
+        }
+        if let epb = expirePeriod?.block {
+            blocks.append(epb)
+        }
+        if let fsb = faceScope.block {
+            blocks.append(fsb)
+        } else {
+            return nil
+        }
+        if let fpb = facePersistency.block {
+            blocks.append(fpb)
+        } else {
+            return nil
+        }
+        if let lb = linkType.block {
+            blocks.append(lb)
+        } else {
+            return nil
+        }
+        if let niib = nInInterests.block {
+            blocks.append(niib)
+        } else {
+            return nil
+        }
+        if let nidb = nInDatas.block {
+            blocks.append(nidb)
+        } else {
+            return nil
+        }
+        if let noib = nOutInterests.block {
+            blocks.append(noib)
+        } else {
+            return nil
+        }
+        if let nodb = nOutDatas.block {
+            blocks.append(nodb)
+        } else {
+            return nil
+        }
+        if let nibb = nInBytes.block {
+            blocks.append(nibb)
+        } else {
+            return nil
+        }
+        if let nobb = nOutBytes.block {
+            blocks.append(nobb)
+        } else {
+            return nil
+        }
+        return Block(type: NDNType.ControlResponse, blocks: blocks)
+    }
+    
+    public override init() {
+        super.init()
+    }
+    
+    public init?(block: Block) {
+        super.init()
+        if block.type != NDNType.FaceStatus {
+            return nil
+        }
+        switch block.value {
+        case .Blocks(let blocks):
+            //TODO: check for completeness
+            for blk in blocks {
+                if let fi = FaceID(block: blk) {
+                    self.faceID = fi
+                } else if let uri = Uri(block: blk) {
+                    self.uri = uri
+                } else if let lu = LocalUri(block: blk) {
+                    self.localUri = lu
+                } else if let ep = ExpirationPeriod(block: blk) {
+                    self.expirePeriod = ep
+                } else if let fs = FaceScope(block: blk) {
+                    self.faceScope = fs
+                } else if let fp = FacePersistency(block: blk) {
+                    self.facePersistency = fp
+                } else if let lt = LinkType(block: blk) {
+                    self.linkType = lt
+                } else if let nii = NInInterests(block: blk) {
+                    self.nInInterests = nii
+                } else if let nid = NInDatas(block: blk) {
+                    self.nInDatas = nid
+                } else if let noi = NOutInterests(block: blk) {
+                    self.nOutInterests = noi
+                } else if let nod = NOutDatas(block: blk) {
+                    self.nOutDatas = nod
+                } else if let nib = NInBytes(block: blk) {
+                    self.nInBytes = nib
+                } else if let nob = NOutBytes(block: blk) {
+                    self.nOutBytes = nob
+                }
+            }
+        default: return nil
+        }
+    }
+    
+    public class func parseFaceStatusDataset(bytes: [UInt8]) -> [FaceStatus] {
+        var bytesRead: Int = 0
+        var ret = [FaceStatus]()
+        while bytesRead < bytes.count {
+            let (block, lengthRead) = Block.wireDecode([UInt8](bytes[bytesRead..<bytes.count]))
+            if let blk = block {
+                bytesRead += lengthRead
+                if let fs = FaceStatus(block: blk) {
+                    ret.append(fs)
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
+        }
+        return ret
+    }
+}
