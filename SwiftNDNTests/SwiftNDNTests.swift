@@ -212,7 +212,22 @@ class SwiftNDNTests: XCTestCase {
         XCTAssertEqual(n30.toUri(), "/a/b/c")
         XCTAssertEqual(n31.toUri(), "/a/b/c/d")
         
+        let n40 = Name(url: "ndn:/a/b")
+        XCTAssert(n40 != nil)
+        XCTAssert(n40!.size == 2)
+        let n41 = Name(url: "ndn://a/b")
+        XCTAssert(n41 != nil)
+        XCTAssert(n41!.size == 1)
+        
+        XCTAssert(Name(url: "http://a") == nil)
+        
+        let n5 = Name(url: "/a/b/%FD%00%01")
+        XCTAssert(n5 != nil)
+        XCTAssert(n5!.size == 3)
+        XCTAssert(n5!.toUri() == "/a/b/%FD%00%01")
+        
         XCTAssert(Name(url: "/%a") == nil)
+        XCTAssert(Name(url: "/%FD") != nil)
         XCTAssert(Name(url: "/+a") != nil)
         XCTAssert(Name(url: "/-a") != nil)
         XCTAssert(Name(url: "/.a") != nil)
@@ -244,6 +259,8 @@ class SwiftNDNTests: XCTestCase {
 //        println(url4?.absoluteString)
 //        println(url4?.pathComponents)
 //        println(url4?.pathComponents?.count)
+        
+        // NSRegularExpression usages
     }
     
     func testExclude() {

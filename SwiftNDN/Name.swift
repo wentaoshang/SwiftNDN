@@ -44,8 +44,14 @@ public class Name: Tlv.Block {
                 let codeByte = url.utf8[index]
                 if codeByte == 0x25 {
                     index = index.successor()
+                    if index == url.utf8.endIndex {
+                        return nil
+                    }
                     let b1 = url.utf8[index]
                     index = index.successor()
+                    if index == url.utf8.endIndex {
+                        return nil
+                    }
                     let b2 = url.utf8[index]
                     if let v1 = HexCharValue[b1] {
                         if let v2 = HexCharValue[b2] {
@@ -144,19 +150,27 @@ public class Name: Tlv.Block {
     
     public init?(url: String) {
         super.init(type: Tlv.NDNType.Name)
-        if let comps = NSURL(string: url)?.pathComponents {
-            for i in 1..<comps.count {
-                let string = comps[i] as NSString
-                if let bytes = Buffer.byteArrayFromString(string) {
-                    if bytes.count == 0 {
-                        continue // skip empty string
-                    } else {
-                        self.appendComponent(Component(bytes: bytes))
-                    }
+        let ndnNameRegex = NSRegularExpression(pattern: "^(?:(?:ndn://[^/]*)|(?:ndn:))?(/.*)$", options: nil, error: nil)
+        if let match = ndnNameRegex?.firstMatchInString(url, options: nil,
+            range: NSRange(location: 0, length: countElements(url)))
+        {
+            if match.numberOfRanges != 2 {
+                return nil
+            }
+            let prefix = (url as NSString).substringWithRange(match.rangeAtIndex(1))
+            let stringComps = prefix.componentsSeparatedByString("/")
+            var comps = Array<Name.Component>()
+            for c in stringComps {
+                if c.isEmpty {
+                    continue
+                }
+                if let comp = Name.Component(url: c) {
+                    comps.append(comp)
                 } else {
                     return nil
                 }
             }
+            self.components = comps
         } else {
             return nil
         }
