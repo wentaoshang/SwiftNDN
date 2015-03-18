@@ -8,8 +8,15 @@
 
 import Foundation
 
-public let NDNURIAllowedCharacterSet = NSCharacterSet(charactersInString:
-    "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+._-")
+//public let NDNURIAllowedCharacterSet = NSCharacterSet(charactersInString:
+//    "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+._-")
+
+public let HexCharValue: [UInt8:UInt8] = [
+    0x30: 0, 0x31: 1, 0x32: 2, 0x33: 3, 0x34: 4, 0x35: 5,
+    0x36: 6, 0x37: 7, 0x38: 8, 0x39: 9, 0x41: 10, 0x42: 11,
+    0x43: 12, 0x44: 13, 0x45: 14, 0x46: 15, 0x61: 10, 0x62: 11,
+    0x63: 12, 0x64: 13, 0x65: 14, 0x66: 15
+]
 
 public class Name: Tlv.Block {
     
@@ -28,32 +35,51 @@ public class Name: Tlv.Block {
         
         public init?(url: String) {
             super.init(type: Tlv.NDNType.NameComponent)
-            if let comps = NSURL(string: url)?.pathComponents? {
-                if comps.count != 1 {
-                    return nil
-                }
-                let unescaped = comps[0] as NSString
-                if unescaped == "/" {
-                    return nil
-                }
-                if let bytes = Buffer.byteArrayFromString(unescaped) {
-                    if bytes.count == 0 {
-                        return nil
-                    } else {
-                        self.value = bytes
-                    }
-                } else {
-                    return nil
-                }
-            } else {
+            if url == "" || url.hasPrefix("/") {
                 return nil
             }
+            var bytes = [UInt8]()
+            var index = url.utf8.startIndex
+            while index != url.utf8.endIndex {
+                let codeByte = url.utf8[index]
+                if codeByte == 0x25 {
+                    index = index.successor()
+                    let b1 = url.utf8[index]
+                    index = index.successor()
+                    let b2 = url.utf8[index]
+                    if let v1 = HexCharValue[b1] {
+                        if let v2 = HexCharValue[b2] {
+                            bytes.append(v1 * 16 + v2)
+                        } else {
+                            return nil
+                        }
+                    } else {
+                        return nil
+                    }
+                } else {
+                    bytes.append(codeByte)
+                }
+                index = index.successor()
+            }
+            self.value = bytes
         }
         
         public func toUri() -> String {
-            var uri = NSString(bytes: self.value, length: self.value.count, encoding: NSASCIIStringEncoding)
+            var output = NSMutableString(capacity: self.value.count * 2)
+            for b in self.value {
+                if (b >= 0x30 && b <= 0x39) || (b >= 0x41 && b <= 0x5A)
+                    || (b >= 0x61 && b <= 0x7A) || b == 0x2B || b == 0x2D
+                    || b == 0x2E || b == 0x5F
+                {
+                    output.appendFormat("%c", b)
+                } else {
+                    output.appendFormat("%%%02X", b)
+                }
+            }
+            return output
+            //var uri = NSString(bytes: self.value, length: self.value.count, encoding: NSASCIIStringEncoding)
             //return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet()))!
-            return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NDNURIAllowedCharacterSet))!
+            //return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NDNURIAllowedCharacterSet))!
         }
         
         // Return -1 if self < target; +1 if self > target; 0 if self == target

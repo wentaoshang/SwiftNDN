@@ -140,6 +140,12 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(aaa! < aac!)
         XCTAssert(aac! > ab!)
         
+        let c70 = Name.Component(bytes: [0xFD, 0, 0, 1, 0x2E])
+        XCTAssert(c70.toUri() == "%FD%00%00%01.")
+        let c71 = Name.Component(url: "%FD%00%00%01.")
+        XCTAssert(c71 != nil)
+        XCTAssert(c71! == c70)
+        
         // Test for Name
         let nameUrl = "/a/b/c/d/%00%01"
         let n0 = Name()
