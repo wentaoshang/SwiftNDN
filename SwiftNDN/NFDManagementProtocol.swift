@@ -38,6 +38,10 @@ public struct NFDType {
     // Rib Status
     public static let RibEntry: UInt64 = 128
     public static let Route: UInt64 = 129
+    
+    // Fib Status
+    public static let FibEntry: UInt64 = 128
+    public static let NextHopRecord: UInt64 = 129
 }
 
 public class FaceID: NonNegativeIntegerTlv {
@@ -599,3 +603,112 @@ public class RibEntry: Tlv.Block {
         return ret
     }
 }
+
+public class NextHopRecord: Tlv.Block {
+    
+    public var faceID = FaceID()
+    public var cost = Cost()
+    
+    public override init() {
+        super.init(type: NFDType.NextHopRecord)
+    }
+    
+    public init?(block: Tlv.Block) {
+        super.init(type: block.type, value: block.value)
+        if block.type != NFDType.NextHopRecord {
+            return nil
+        }
+        if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
+            for blk in blocks {
+                if let fi = FaceID(block: blk) {
+                    self.faceID = fi
+                } else if let co = Cost(block: blk) {
+                    self.cost = co
+                }
+            }
+        }
+    }
+    
+    public override func wireEncodeValue() -> [UInt8] {
+        var buf = Buffer(capacity: Int(self.length))
+        self.faceID.wireEncode(buf)
+        self.cost.wireEncode(buf)
+        self.value = buf.buffer
+        return self.value
+    }
+    
+    public override var length: UInt64 {
+        var l: UInt64 = 0
+        l += self.faceID.totalLength
+        l += self.cost.totalLength
+        return l
+    }
+}
+
+public class FibEntry: Tlv.Block {
+    public var name = Name()
+    public var nexthops = [NextHopRecord]()
+    
+    public override init() {
+        super.init(type: NFDType.FibEntry)
+    }
+    
+    public init?(block: Tlv.Block) {
+        super.init(type: block.type, value: block.value)
+        if block.type != NFDType.FibEntry {
+            return nil
+        }
+        if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
+            if blocks.count < 2 {
+                return nil
+            }
+            if let na = Name(block: blocks[0]) {
+                self.name = na
+            } else {
+                return nil
+            }
+            var nhs = [NextHopRecord]()
+            for i in 1 ..< blocks.count {
+                if let nh = NextHopRecord(block: blocks[i]) {
+                    nhs.append(nh)
+                }
+                // Ignore unexpected TLVs
+            }
+            self.nexthops = nhs
+        }
+    }
+    
+    public override func wireEncodeValue() -> [UInt8] {
+        var buf = Buffer(capacity: Int(self.length))
+        self.name.wireEncode(buf)
+        for nh in self.nexthops {
+            nh.wireEncode(buf)
+        }
+        self.value = buf.buffer
+        return self.value
+    }
+    
+    public override var length: UInt64 {
+        var l: UInt64 = 0
+        l += self.name.totalLength
+        for nh in self.nexthops {
+            l += nh.totalLength
+        }
+        return l
+    }
+    
+    public class func parseFIBDataset(bytes: [UInt8]) -> [FibEntry] {
+        var ret = [FibEntry]()
+        if let blocks = Tlv.Block.wireDecodeBlockArray(bytes) {
+            for blk in blocks {
+                if let fe = FibEntry(block: blk) {
+                    ret.append(fe)
+                } else {
+                    break
+                }
+            }
+        }
+        return ret
+    }
+}
+
