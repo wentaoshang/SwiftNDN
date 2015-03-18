@@ -45,7 +45,7 @@ public class FaceTestServer: NSObject, GCDAsyncSocketDelegate {
         if let bytes = AsyncTcpTransport.byteArrayFromNSData(data) {
             buffer += bytes
             while buffer.count > 0 {
-                let decoded = Tlv.Block.wireDecode(buffer)
+                let decoded = Tlv.Block.wireDecodeWithBytes(buffer)
                 if let blk = decoded.block {
                     if let interest = Interest(block: blk) {
                         processInterest(sock, interest: interest)
@@ -66,10 +66,9 @@ public class FaceTestServer: NSObject, GCDAsyncSocketDelegate {
             data.name.appendComponent("%00%02")
             data.setContent([0, 1, 2, 3, 4, 5, 6, 7])
             data.signatureValue = Data.SignatureValue(value: [UInt8](count: 64, repeatedValue: 0))
-            if let encoded = data.wireEncode() {
-                let echoData = NSData(bytes: encoded, length: encoded.count)
-                sock.writeData(echoData, withTimeout: -1, tag: 0)
-            }
+            let encoded = data.wireEncode()
+            let echoData = NSData(bytes: encoded, length: encoded.count)
+            sock.writeData(echoData, withTimeout: -1, tag: 0)
         }
     }
 }

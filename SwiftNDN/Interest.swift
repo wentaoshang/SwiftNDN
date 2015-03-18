@@ -8,31 +8,31 @@
 
 import Foundation
 
-public class Interest: Tlv {
+public class Interest: Tlv.Block {
     
-    public class Selectors: Tlv {
+    public class Selectors: Tlv.Block {
         
-        public class Exclude: Tlv {
+        public class Exclude: Tlv.Block {
             
             var filter = [[UInt8]]()
             
             public override init() {
-                super.init()
+                super.init(type: Tlv.NDNType.Exclude)
             }
             
             public init(filter: [[UInt8]]) {
+                super.init(type: Tlv.NDNType.Exclude)
                 self.filter = filter
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.Exclude {
+            public init?(block: Tlv.Block) {
+                super.init(type: block.type, value: block.value)
+                if block.type != Tlv.NDNType.Exclude {
                     return nil
                 }
-                switch block.value {
-                case .Blocks(let blocks):
+                if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                     for blk in blocks {
-                        if blk.type == NDNType.Any {
+                        if blk.type == Tlv.NDNType.Any {
                             self.filter.append([])
                         } else if let nc = Name.Component(block: blk) {
                             self.filter.append(nc.value)
@@ -40,20 +40,7 @@ public class Interest: Tlv {
                             return nil
                         }
                     }
-                default: return nil
                 }
-            }
-            
-            public override var block: Block? {
-                var blocks = [Block]()
-                for arr in self.filter {
-                    if arr.isEmpty {
-                        blocks.append(Block(type: NDNType.Any))
-                    } else if let ncb = Name.Component(bytes: arr).block {
-                        blocks.append(ncb)
-                    }
-                }
-                return Block(type: NDNType.Exclude, blocks: blocks)
             }
 
             public func appendAny() {
@@ -120,6 +107,23 @@ public class Interest: Tlv {
                 }
                 return false
             }
+            
+            public override func wireEncodeValue() -> [UInt8] {
+                var buf = Buffer(capacity: Int(self.length))
+                for f in filter {
+                    Name.Component(bytes: f).wireEncode(buf)
+                }
+                self.value = buf.buffer
+                return self.value
+            }
+            
+            public override var length: UInt64 {
+                var l: UInt64 = 0
+                for f in filter {
+                    l += Name.Component(bytes: f).totalLength
+                }
+                return l
+            }
         }
         
         public class ChildSelector: NonNegativeIntegerTlv {
@@ -133,25 +137,21 @@ public class Interest: Tlv {
                 return Val.LeftmostChild
             }
             
-            override var tlvType: TypeCode {
-                return TypeCode(type: NDNType.ChildSelector)
+            override var tlvType: UInt64 {
+                return Tlv.NDNType.ChildSelector
             }
             
         }
         
-        public class MustBeFresh: Tlv {
-            
-            public override var block: Block? {
-                return Block(type: NDNType.MustBeFresh)
-            }
+        public class MustBeFresh: Tlv.Block {
             
             public override init() {
-                super.init()
+                super.init(type: Tlv.NDNType.MustBeFresh)
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.MustBeFresh {
+            public init?(block: Tlv.Block) {
+                super.init(type: block.type)
+                if block.type != Tlv.NDNType.MustBeFresh {
                     return nil
                 }
             }
@@ -162,34 +162,15 @@ public class Interest: Tlv {
         var mustBeFresh: MustBeFresh?
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.Selectors)
         }
         
-        public override var block: Block? {
-            var blk = Block(type: NDNType.Selectors)
-            
-            if let exBlock = self.exclude?.block {
-                blk.appendBlock(exBlock)
-            }
-            
-            if let csBlock = self.childSelector?.block {
-                blk.appendBlock(csBlock)
-            }
-            
-            if let mbfBlock = self.mustBeFresh?.block {
-                blk.appendBlock(mbfBlock)
-            }
-            
-            return blk
-        }
-        
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.Selectors {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.Selectors {
                 return nil
             }
-            switch block.value {
-            case .Blocks(let blocks):
+            if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                 for blk in blocks {
                     if let ex = Exclude(block: blk) {
                         self.exclude = ex
@@ -200,8 +181,31 @@ public class Interest: Tlv {
                     }
                     // Ignore unknown TLVs
                 }
-            default: return nil
             }
+        }
+        
+        public override func wireEncodeValue() -> [UInt8] {
+            var buf = Buffer(capacity: Int(self.length))
+            
+            self.exclude?.wireEncode(buf)
+            self.childSelector?.wireEncode(buf)
+            self.mustBeFresh?.wireEncode(buf)
+            self.value = buf.buffer
+            return self.value
+        }
+        
+        public override var length: UInt64 {
+            var l: UInt64 = 0
+            if let ex = self.exclude {
+                l += ex.totalLength
+            }
+            if let cs = self.childSelector {
+                l += cs.totalLength
+            }
+            if let mbf = self.mustBeFresh {
+                l += mbf.totalLength
+            }
+            return l
         }
     }
     
@@ -213,8 +217,8 @@ public class Interest: Tlv {
             public static let LocalHub: UInt64 = 2
         }
         
-        override var tlvType: TypeCode {
-            return TypeCode(type: NDNType.Scope)
+        override var tlvType: UInt64 {
+            return Tlv.NDNType.Scope
         }
         
         override var defaultValue: UInt64 {
@@ -225,8 +229,8 @@ public class Interest: Tlv {
     
     public class InterestLifetime: NonNegativeIntegerTlv {
         
-        override var tlvType: TypeCode {
-            return TypeCode(type: NDNType.InterestLifetime)
+        override var tlvType: UInt64 {
+            return Tlv.NDNType.InterestLifetime
         }
         
         override var defaultValue: UInt64 {
@@ -235,16 +239,11 @@ public class Interest: Tlv {
         
     }
     
-    public class Nonce: Tlv {
-        
-        var value = [UInt8](count: 4, repeatedValue: 0)
-        
-        public override var block: Block? {
-            return Block(type: NDNType.Nonce, bytes: self.value)
-        }
+    public class Nonce: Tlv.Block {
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.Nonce)
+            value = [UInt8](count: 4, repeatedValue: 0)
             
             let random32bit = arc4random()
             value[0] = UInt8((random32bit >> 24) & 0xFF)
@@ -253,19 +252,13 @@ public class Interest: Tlv {
             value[3] = UInt8(random32bit & 0xFF)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.Nonce {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.Nonce {
                 return nil
             }
-            switch block.value {
-            case .RawBytes(let bytes):
-                if bytes.count != 4 {
-                    return nil
-                } else {
-                    self.value = bytes
-                }
-            default: return nil
+            if block.value.count != 4 {
+                return nil
             }
         }
     }
@@ -277,41 +270,15 @@ public class Interest: Tlv {
     public var interestLifetime: InterestLifetime?
     
     public override init() {
-        super.init()
+        super.init(type: Tlv.NDNType.Interest)
     }
     
-    public override var block: Block? {
-        var blk = Block(type: NDNType.Interest)
-        if let nameBlock = self.name.block {
-            blk.appendBlock(nameBlock)
-        } else {
+    public init?(block: Tlv.Block) {
+        super.init(type: block.type)
+        if block.type != Tlv.NDNType.Interest {
             return nil
         }
-        
-        if let selectorsBlock = self.selectors?.block {
-            blk.appendBlock(selectorsBlock)
-        }
-        
-        blk.appendBlock(self.nonce.block!) // Nonce.block will never return nil
-        
-        if let scopeBlock = self.scope?.block {
-            blk.appendBlock(scopeBlock)
-        }
-        
-        if let ilBlock = self.interestLifetime?.block {
-            blk.appendBlock(ilBlock)
-        }
-        
-        return blk
-    }
-    
-    public init?(block: Block) {
-        super.init()
-        if block.type != NDNType.Interest {
-            return nil
-        }
-        switch block.value {
-        case .Blocks(let blocks):
+        if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
             var hasName = false
             var hasNonce = false
             for blk in blocks {
@@ -332,7 +299,6 @@ public class Interest: Tlv {
             if !hasName || !hasNonce {
                 return nil
             }
-        default: return nil
         }
     }
     
@@ -362,7 +328,7 @@ public class Interest: Tlv {
     }
     
     public func getChildSelector() -> UInt64? {
-        return self.selectors?.childSelector?.value
+        return self.selectors?.childSelector?.integerValue
     }
     
     public func setMustBeFresh() {
@@ -385,7 +351,7 @@ public class Interest: Tlv {
     }
     
     public func getScope() -> UInt64? {
-        return self.scope?.value
+        return self.scope?.integerValue
     }
     
     public func setInterestLifetime(value: UInt64) {
@@ -393,16 +359,47 @@ public class Interest: Tlv {
     }
     
     public func getInterestLifetime() -> UInt64? {
-        return self.interestLifetime?.value
+        return self.interestLifetime?.integerValue
     }
     
     public class func wireDecode(bytes: [UInt8]) -> Interest? {
-        let (block, _) = Block.wireDecode(bytes)
+        let (block, _) = Tlv.Block.wireDecodeWithBytes(bytes)
         if let blk = block {
             return Interest(block: blk)
         } else {
             return nil
         }
+    }
+    
+    public override func wireEncodeValue() -> [UInt8] {
+        var buf = Buffer(capacity: Int(self.length))
+        self.name.wireEncode(buf)
+        self.selectors?.wireEncode(buf)
+        self.nonce.wireEncode(buf)
+        self.scope?.wireEncode(buf)
+        self.interestLifetime?.wireEncode(buf)
+        self.value = buf.buffer
+        return self.value
+    }
+    
+    public override var length: UInt64 {
+        var l: UInt64 = 0
+        l += self.name.totalLength
+        if let sl = self.selectors {
+            l += sl.totalLength
+        }
+        
+        l += self.nonce.totalLength
+        
+        if let sc = self.scope {
+            l += sc.totalLength
+        }
+        
+        if let il = self.interestLifetime {
+            l += il.totalLength
+        }
+        
+        return l
     }
     
     public func matchesData(data: Data) -> Bool {
@@ -444,31 +441,24 @@ public class SignedInterest: Interest {
     public var signatureInfo: Data.SignatureInfo
     public var signatureValue: Data.SignatureValue
     
-    public init(name: Name) {
+    public init(prefix: Name) {
         self.timestamp = getTimeSinceEpochInMS()
         self.randomValue = UInt64(arc4random())
         self.signatureInfo = Data.SignatureInfo()
         self.signatureValue = Data.SignatureValue()
         super.init()
-        self.name = name
         //FIXME: fill with fake signature for now!!!
         self.signatureValue.value = [UInt8](count: 32, repeatedValue: 0x77)
+        let sigInfo = signatureInfo.wireEncode()
+        let sigVal = signatureValue.wireEncode()
+        self.name = Name(name: prefix)
+            .appendNumber(timestamp)
+            .appendNumber(randomValue)
+            .appendComponent(sigInfo)
+            .appendComponent(sigVal)
     }
     
-    public var fullName: Name? {
-        if let sigInfo = signatureInfo.wireEncode() {
-            if let sigVal = signatureValue.wireEncode() {
-                return Name(name: self.name)
-                    .appendNumber(timestamp)
-                    .appendNumber(randomValue)
-                    .appendComponent(sigInfo)
-                    .appendComponent(sigVal)
-            }
-        }
-        return nil
-    }
-    
-    public override init?(block: Block) {
+    public override init?(block: Tlv.Block) {
         self.timestamp = 0
         self.randomValue = 0
         self.signatureInfo = Data.SignatureInfo()
@@ -480,19 +470,11 @@ public class SignedInterest: Interest {
         }
         self.timestamp = Buffer.nonNegativeIntegerFromByteArray(self.name.getComponentByIndex(-4)!.value)
         self.randomValue = Buffer.nonNegativeIntegerFromByteArray(self.name.getComponentByIndex(-3)!.value)
-        //FIXME: parse SignatureInfo and SignatureValue
-        self.name = self.name.getPrefix(self.name.size - 4)
+        //TODO: parse SignatureInfo and SignatureValue
+        //self.name = self.name.getPrefix(self.name.size - 4)
     }
     
-    public override var block: Block? {
-        if let fn = self.fullName {
-            var oldName = self.name
-            self.name = fn
-            var blk = super.block
-            self.name = oldName
-            return blk
-        } else {
-            return nil
-        }
+    public var prefix: Name {
+        return self.name.getPrefix(self.name.size - 4)
     }
 }

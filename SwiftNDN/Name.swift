@@ -11,34 +11,23 @@ import Foundation
 public let NDNURIAllowedCharacterSet = NSCharacterSet(charactersInString:
     "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+._-")
 
-public class Name: Tlv {
+public class Name: Tlv.Block {
     
-    public class Component: Tlv {
-        
-        let value = [UInt8]()
-        
-        public override var block: Block? {
-            return Block(type: NDNType.NameComponent, bytes: self.value)
-        }
+    public class Component: Tlv.Block {
         
         public init(bytes: [UInt8]) {
-            self.value = bytes
+            super.init(type: Tlv.NDNType.NameComponent, value: bytes)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.NameComponent {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.NameComponent {
                 return nil
-            }
-            switch block.value {
-            case .RawBytes(let bytes):
-                self.value = bytes
-            default: return nil
             }
         }
         
         public init?(url: String) {
-            super.init()
+            super.init(type: Tlv.NDNType.NameComponent)
             if let comps = NSURL(string: url)?.pathComponents? {
                 if comps.count != 1 {
                     return nil
@@ -47,16 +36,6 @@ public class Name: Tlv {
                 if unescaped == "/" {
                     return nil
                 }
-//                let cStr = unescaped.cStringUsingEncoding(NSASCIIStringEncoding)
-//                let cStrLen = unescaped.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
-//                if cStrLen == 0 {
-//                    return nil
-//                }
-//                var bytes = [UInt8]()
-//                bytes.reserveCapacity(cStrLen)
-//                for i in 0..<cStrLen {
-//                    bytes.append(UInt8(cStr[i]))
-//                }
                 if let bytes = Buffer.byteArrayFromString(unescaped) {
                     if bytes.count == 0 {
                         return nil
@@ -99,18 +78,6 @@ public class Name: Tlv {
     
     var components = [Component]()
     
-    public override var block: Block? {
-        var blk = Block(type: NDNType.Name)
-        for comp in self.components {
-            if let compBlock = comp.block {
-                blk.appendBlock(compBlock)
-            } else {
-                return nil
-            }
-        }
-        return blk
-    }
-    
     public var size: Int {
         return self.components.count
     }
@@ -120,21 +87,21 @@ public class Name: Tlv {
     }
     
     public override init() {
-        super.init()
+        super.init(type: Tlv.NDNType.Name)
     }
     
     public init(name: Name) {
+        super.init(type: Tlv.NDNType.Name)
         // make a copy
         self.components = name.components
     }
 
-    public init?(block: Block) {
-        super.init()
-        if block.type != NDNType.Name {
+    public init?(block: Tlv.Block) {
+        super.init(type: block.type, value: block.value)
+        if block.type != Tlv.NDNType.Name {
             return nil
         }
-        switch block.value {
-        case .Blocks(let blocks):
+        if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
             var comps = [Component]()
             for blk in blocks {
                 if let c = Component(block: blk) {
@@ -144,12 +111,13 @@ public class Name: Tlv {
                 }
             }
             self.components = comps
-        default: return nil
+        } else {
+            return nil
         }
     }
     
     public init?(url: String) {
-        super.init()
+        super.init(type: Tlv.NDNType.Name)
         if let comps = NSURL(string: url)?.pathComponents {
             for i in 1..<comps.count {
                 let string = comps[i] as NSString
@@ -162,18 +130,6 @@ public class Name: Tlv {
                 } else {
                     return nil
                 }
-
-//                let cStr = string.cStringUsingEncoding(NSASCIIStringEncoding)
-//                let cStrLen = string.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
-//                if cStrLen == 0 {
-//                    continue // skip empty string
-//                }
-//                var bytes = [UInt8]()
-//                bytes.reserveCapacity(cStrLen)
-//                for i in 0..<cStrLen {
-//                    bytes.append(UInt8(cStr[i]))
-//                }
-//                self.appendComponent(Component(bytes: bytes))
             }
         } else {
             return nil
@@ -275,8 +231,25 @@ public class Name: Tlv {
         return true
     }
     
+    public override func wireEncodeValue() -> [UInt8] {
+        var buf = Buffer(capacity: Int(self.length))
+        for c in self.components {
+            c.wireEncode(buf)
+        }
+        self.value = buf.buffer
+        return self.value
+    }
+    
+    public override var length: UInt64 {
+        var l: UInt64 = 0
+        for c in self.components {
+            l += c.totalLength
+        }
+        return l
+    }
+    
     public class func wireDecode(bytes: [UInt8]) -> Name? {
-        let (block, _) = Block.wireDecode(bytes)
+        let (block, _) = Tlv.Block.wireDecodeWithBytes(bytes)
         if let blk = block {
             return Name(block: blk)
         } else {

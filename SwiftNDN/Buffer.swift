@@ -139,7 +139,7 @@ public class Buffer: Printable {
         return nil
     }
     
-    public class func getNonNegativeIntegerEncodedLength(number: UInt64) -> Int {
+    public class func getNonNegativeIntegerEncodedLength(number: UInt64) -> UInt64 {
         switch number {
         case let x where x <= 0xFF: return 1
         case let x where x > 0xFF && x <= 0xFFFF: return 2

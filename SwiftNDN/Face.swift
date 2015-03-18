@@ -78,6 +78,15 @@ public class Face: AsyncTransportDelegate {
         return false
     }
     
+#if os(iOS)
+    public func enableBackgroundMode() {
+        self.transport.socket.performBlock() { [unowned self] in
+            self.transport.socket.enableBackgroundingOnSocket()
+            return
+        }
+    }
+#endif
+    
     public typealias OnDataCallback = (Interest, Data) -> Void
     public typealias OnTimeoutCallback = (Interest) -> Void
     public typealias OnInterestCallback = (Interest) -> Void
@@ -225,13 +234,10 @@ public class Face: AsyncTransportDelegate {
             return false
         }
         
-        if let wire = interest.wireEncode() {
-            expressedInterests.append(interest, onDataCb: onData, onTimeoutCb: onTimeout)
-            transport.send(wire)
-            return true
-        } else {
-            return false
-        }
+        let wire = interest.wireEncode()
+        expressedInterests.append(interest, onDataCb: onData, onTimeoutCb: onTimeout)
+        transport.send(wire)
+        return true
     }
     
     public func registerPrefix(prefix: Name, onInterest: OnInterestCallback?,
@@ -256,12 +262,12 @@ public class Face: AsyncTransportDelegate {
             ribRegPrefix = Name(url: "/localhop/nfd")!
         }
         
-        var nfdRibRegisterInterest = ControlCommand(prefix: ribRegPrefix,
-            module: "rib", verb: "register", param: param)
+        let nfdRibRegisterInterest = ControlCommand(prefix: ribRegPrefix,
+            module: Name.Component(url: "rib")!, verb: Name.Component(url: "register")!, param: param)
         let ret = self.expressInterest(nfdRibRegisterInterest, onData: { [unowned self] _, d in
             let content = d.getContent()
             if let response = ControlResponse.wireDecode(content) {
-                if response.statusCode.value == 200 {
+                if response.statusCode.integerValue == 200 {
                     onRegisterSuccess?(prefix)
                 } else {
                     onRegisterFailure?("Register command failure")
@@ -269,9 +275,9 @@ public class Face: AsyncTransportDelegate {
             } else {
                 onRegisterFailure?("Malformat control response")
             }
-        }, onTimeout: { [unowned self] _ in
-            onRegisterFailure?("Command Interest timeout")
-            lentry.detach()
+            }, onTimeout: { [unowned self] _ in
+                onRegisterFailure?("Command Interest timeout")
+                lentry.detach()
         })
         
         if !ret {
@@ -281,12 +287,7 @@ public class Face: AsyncTransportDelegate {
         }
     }
     
-    public func put(data: Data) -> Bool {
-        if let wire = data.wireEncode() {
-            transport.send(wire)
-            return true
-        } else {
-            return false
-        }
+    public func put(data: Data) {
+        transport.send(data.wireEncode())
     }
 }

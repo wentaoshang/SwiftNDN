@@ -45,7 +45,7 @@ public class TlvEchoServer: NSObject, GCDAsyncSocketDelegate {
         if let bytes = AsyncTcpTransport.byteArrayFromNSData(data) {
             buffer += bytes
             while buffer.count > 0 {
-                let decoded = Tlv.Block.wireDecode(buffer)
+                let decoded = Tlv.Block.wireDecodeWithBytes(buffer)
                 if let blk = decoded.block {
                     //println("TlvEchoServer: didReadData: \(buffer)")
                     //println("TlvEchoServer: didReadData: \(blk)")

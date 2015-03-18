@@ -8,9 +8,9 @@
 
 import Foundation
 
-public class Data: Tlv {
+public class Data: Tlv.Block {
     
-    public class MetaInfo: Tlv {
+    public class MetaInfo: Tlv.Block {
         
         public class ContentType: NonNegativeIntegerTlv {
             
@@ -20,8 +20,8 @@ public class Data: Tlv {
                 static let Key:  UInt64 = 2
             }
             
-            override var tlvType: TypeCode {
-                return TypeCode(type: NDNType.ContentType)
+            override var tlvType: UInt64 {
+                return Tlv.NDNType.ContentType
             }
             
             override var defaultValue: UInt64 {
@@ -32,51 +32,49 @@ public class Data: Tlv {
         
         public class FreshnessPeriod: NonNegativeIntegerTlv {
             
-            override var tlvType: TypeCode {
-                return TypeCode(type: NDNType.FreshnessPeriod)
+            override var tlvType: UInt64 {
+                return Tlv.NDNType.FreshnessPeriod
             }
 
         }
         
-        public class FinalBlockID: Tlv {
+        public class FinalBlockID: Tlv.Block {
             
-            var value = Name.Component(bytes: [0, 0])
-            
-            public override var block: Block? {
-                var blocks = [Block]()
-                if let ncb = value.block {
-                    blocks.append(ncb)
-                } else {
-                    return nil
-                }
-                return Block(type: NDNType.FinalBlockId, blocks: blocks)
-            }
+            var component = Name.Component(bytes: [0, 0])
             
             public override init() {
-                super.init()
+                super.init(type: Tlv.NDNType.FinalBlockId)
             }
             
             public init(component: Name.Component) {
-                self.value = component
+                super.init(type: Tlv.NDNType.FinalBlockId)
+                self.component = component
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.FinalBlockId {
+            public init?(block: Tlv.Block) {
+                super.init(type: block.type, value: block.value)
+                if block.type != Tlv.NDNType.FinalBlockId {
                     return nil
                 }
-                switch block.value {
-                case .Blocks(let blocks):
+                if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                     if blocks.count != 1 {
                         return nil
                     }
                     if let nc = Name.Component(block: blocks[0]) {
-                        self.value = nc
+                        self.component = nc
                     } else {
                         return nil
                     }
-                default: return nil
                 }
+            }
+            
+            public override func wireEncode() -> [UInt8] {
+                self.value = self.component.wireEncode()
+                return super.wireEncode()
+            }
+            
+            public override var length: UInt64 {
+                return self.component.totalLength
             }
         }
             
@@ -85,16 +83,15 @@ public class Data: Tlv {
         var finalBlockID: FinalBlockID?
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.MetaInfo)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.MetaInfo {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.MetaInfo {
                 return nil
             }
-            switch block.value {
-            case .Blocks(let blocks):
+            if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                 //FIXME: enforce order during decoding?
                 for blk in blocks {
                     if let ct = ContentType(block: blk) {
@@ -105,57 +102,54 @@ public class Data: Tlv {
                         self.finalBlockID = fbi
                     }
                 }
-            default: return nil
             }
         }
         
-        public override var block: Block? {
-            var blocks = [Block]()
-            if let ctb = self.contentType?.block {
-                blocks.append(ctb)
+        public override func wireEncodeValue() -> [UInt8] {
+            var buf = Buffer(capacity: Int(self.length))
+            self.contentType?.wireEncode(buf)
+            self.freshnessPeriod?.wireEncode(buf)
+            self.finalBlockID?.wireEncode(buf)
+            self.value = buf.buffer
+            return self.value
+        }
+        
+        public override var length: UInt64 {
+            var l: UInt64 = 0
+            if let ct = self.contentType {
+                l += ct.totalLength
             }
-            if let fpb = self.freshnessPeriod?.block {
-                blocks.append(fpb)
+            if let fp = self.freshnessPeriod {
+                l += fp.totalLength
             }
-            if let fbb = self.finalBlockID?.block {
-                blocks.append(fbb)
+            if let fbi = self.finalBlockID {
+                l += fbi.totalLength
             }
-            return Block(type: NDNType.MetaInfo, blocks: blocks)
+            return l
         }
     }
     
-    public class Content: Tlv {
-        
-        var value = [UInt8]()
-        
-        public override var block: Block? {
-            return Block(type: NDNType.Content, bytes: value)
-        }
+    public class Content: Tlv.Block {
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.Content)
         }
         
         public init(value: [UInt8]) {
-            self.value = value
+            super.init(type: Tlv.NDNType.Content, value: value)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.Content {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.Content {
                 return nil
-            }
-            switch block.value {
-            case .RawBytes(let bytes):
-                self.value = bytes
-            default: return nil
             }
         }
     }
     
-    public class SignatureInfo: Tlv {
+    public class SignatureInfo: Tlv.Block {
         
-        public class SignatureType: Tlv {
+        public class SignatureType: NonNegativeIntegerTlv {
             
             public struct Val {
                 public static let DigestSha256: UInt64 = 0
@@ -163,54 +157,36 @@ public class Data: Tlv {
                 public static let SignatureSha256WithEcdsa: UInt64 = 3
             }
             
-            var value: UInt64 = Val.SignatureSha256WithRsa
-            
-            public override init() {
-                super.init()
+            override var tlvType: UInt64 {
+                return Tlv.NDNType.SignatureType
             }
             
-            public init(value: UInt64) {
-                self.value = value
+            override var defaultValue: UInt64 {
+                return Val.SignatureSha256WithRsa
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.SignatureType {
-                    return nil
-                }
-                switch block.value {
-                case .RawBytes(let bytes):
-                    self.value = Buffer.nonNegativeIntegerFromByteArray(bytes)
-                default: return nil
-                }
-            }
-            
-            public override var block: Block? {
-                let bytes = Buffer.byteArrayFromNonNegativeInteger(value)
-                return Block(type: NDNType.SignatureType, bytes: bytes)
-            }
         }
         
-        public class KeyLocator: Tlv {
+        public class KeyLocator: Tlv.Block {
             
             var name = Name()
             //TODO: support KeyDigest
             
             public override init() {
-                super.init()
+                super.init(type: Tlv.NDNType.KeyLocator)
             }
             
             public init(name: Name) {
+                super.init(type: Tlv.NDNType.KeyLocator)
                 self.name = name
             }
             
-            public init?(block: Block) {
-                super.init()
-                if block.type != NDNType.KeyLocator {
+            public init?(block: Tlv.Block) {
+                super.init(type: block.type, value: block.value)
+                if block.type != Tlv.NDNType.KeyLocator {
                     return nil
                 }
-                switch block.value {
-                case .Blocks(let blocks):
+                if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                     if blocks.count != 1 {
                         return nil
                     }
@@ -219,18 +195,16 @@ public class Data: Tlv {
                     } else {
                         return nil
                     }
-                default: return nil
                 }
             }
             
-            public override var block: Block? {
-                var blocks = [Block]()
-                if let nb = self.name.block {
-                    blocks.append(nb)
-                    return Block(type: NDNType.KeyLocator, blocks: blocks)
-                } else {
-                    return nil
-                }
+            public override func wireEncode() -> [UInt8] {
+                self.value = self.name.wireEncode()
+                return super.wireEncode()
+            }
+            
+            public override var length: UInt64 {
+                return self.name.totalLength
             }
         }
         
@@ -238,16 +212,15 @@ public class Data: Tlv {
         public var keyLocator: KeyLocator?
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.SignatureInfo)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.SignatureInfo {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.SignatureInfo {
                 return nil
             }
-            switch block.value {
-            case .Blocks(let blocks):
+            if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
                 if blocks.count < 1 {
                     return nil
                 }
@@ -261,49 +234,41 @@ public class Data: Tlv {
                         self.keyLocator = kl
                     }
                 }
-            default: return nil
             }
         }
         
-        public override var block: Block? {
-            var blocks = [Block]()
-            if let stb = self.signatureType.block {
-                blocks.append(stb)
-            } else {
-                return nil
+        public override func wireEncodeValue() -> [UInt8] {
+            var buf = Buffer(capacity: Int(self.length))
+            self.signatureType.wireEncode(buf)
+            self.keyLocator?.wireEncode(buf)
+            self.value = buf.buffer
+            return self.value
+        }
+        
+        public override var length: UInt64 {
+            var l: UInt64 = 0
+            l += self.signatureType.totalLength
+            if let kl = self.keyLocator {
+                l += kl.totalLength
             }
-            if let klb = self.keyLocator?.block {
-                blocks.append(klb)
-            }
-            return Block(type: NDNType.SignatureInfo, blocks: blocks)
+            return l
         }
     }
     
-    public class SignatureValue: Tlv {
-        
-        var value = [UInt8]()
-        
-        public override var block: Block? {
-            return Block(type: NDNType.SignatureValue, bytes: value)
-        }
+    public class SignatureValue: Tlv.Block {
         
         public override init() {
-            super.init()
+            super.init(type: Tlv.NDNType.SignatureValue)
         }
         
         public init(value: [UInt8]) {
-            self.value = value
+            super.init(type: Tlv.NDNType.SignatureValue, value: value)
         }
         
-        public init?(block: Block) {
-            super.init()
-            if block.type != NDNType.SignatureValue {
+        public init?(block: Tlv.Block) {
+            super.init(type: block.type, value: block.value)
+            if block.type != Tlv.NDNType.SignatureValue {
                 return nil
-            }
-            switch block.value {
-            case .RawBytes(let bytes):
-                self.value = bytes
-            default: return nil
             }
         }
     }
@@ -315,16 +280,15 @@ public class Data: Tlv {
     public var signatureValue = SignatureValue()
     
     public override init() {
-        super.init()
+        super.init(type: Tlv.NDNType.Data)
     }
     
-    public init?(block: Block) {
-        super.init()
-        if block.type != NDNType.Data {
+    public init?(block: Tlv.Block) {
+        super.init(type: block.type, value: block.value)
+        if block.type != Tlv.NDNType.Data {
             return nil
         }
-        switch block.value {
-        case .Blocks(let blocks):
+        if let blocks = Tlv.Block.wireDecodeBlockArray(block.value) {
             if blocks.count != 5 {
                 return nil
             }
@@ -353,38 +317,28 @@ public class Data: Tlv {
             } else {
                 return nil
             }
-        default: return nil
         }
     }
     
-    public override var block: Block? {
-        var blocks = [Block]()
-        if let nb = self.name.block {
-            blocks.append(nb)
-        } else {
-            return nil
-        }
-        if let mb = self.metaInfo.block {
-            blocks.append(mb)
-        } else {
-            return nil
-        }
-        if let cb = self.content.block {
-            blocks.append(cb)
-        } else {
-            return nil
-        }
-        if let sib = self.signatureInfo.block {
-            blocks.append(sib)
-        } else {
-            return nil
-        }
-        if let svb = self.signatureValue.block {
-            blocks.append(svb)
-        } else {
-            return nil
-        }
-        return Block(type: NDNType.Data, blocks: blocks)
+    public override func wireEncodeValue() -> [UInt8] {
+        var buf = Buffer(capacity: Int(self.length))
+        self.name.wireEncode(buf)
+        self.metaInfo.wireEncode(buf)
+        self.content.wireEncode(buf)
+        self.signatureInfo.wireEncode(buf)
+        self.signatureValue.wireEncode(buf)
+        self.value = buf.buffer
+        return self.value
+    }
+    
+    public override var length: UInt64 {
+        var l: UInt64 = 0
+        l += self.name.totalLength
+        l += self.metaInfo.totalLength
+        l += self.content.totalLength
+        l += self.signatureInfo.totalLength
+        l += self.signatureValue.totalLength
+        return l
     }
     
     public func setContent(value: [UInt8]) {
@@ -400,7 +354,7 @@ public class Data: Tlv {
     }
     
     public func getFreshnessPeriod() -> UInt64? {
-        return self.metaInfo.freshnessPeriod?.value
+        return self.metaInfo.freshnessPeriod?.integerValue
     }
     
     public func setContentType(value: UInt64) {
@@ -408,7 +362,7 @@ public class Data: Tlv {
     }
     
     public func getContentType() -> UInt64? {
-        return self.metaInfo.contentType?.value
+        return self.metaInfo.contentType?.integerValue
     }
     
     public func setFinalBlockID(value: Name.Component) {
@@ -416,7 +370,7 @@ public class Data: Tlv {
     }
     
     public func getFinalBlockID() -> Name.Component? {
-        return self.metaInfo.finalBlockID?.value
+        return self.metaInfo.finalBlockID?.component
     }
     
     func setSignature(value: [UInt8]) {
@@ -427,19 +381,16 @@ public class Data: Tlv {
         return self.signatureValue.value
     }
     
-    public func getSignedPortion() -> [UInt8]? {
-        if let nameEncode = self.name.wireEncode() {
-            if let sigInfoEncode = self.signatureInfo.wireEncode() {
-                let metaEncode = self.metaInfo.block!.wireEncode()
-                let contentEncode = self.content.block!.wireEncode()
-                return nameEncode + metaEncode + contentEncode + sigInfoEncode
-            }
-        }
-        return nil
+    public func getSignedPortion() -> [UInt8] {
+        let nameEncode = self.name.wireEncode()
+        let sigInfoEncode = self.signatureInfo.wireEncode()
+        let metaEncode = self.metaInfo.wireEncode()
+        let contentEncode = self.content.wireEncode()
+        return nameEncode + metaEncode + contentEncode + sigInfoEncode
     }
     
     public class func wireDecode(bytes: [UInt8]) -> Data? {
-        let (block, _) = Block.wireDecode(bytes)
+        let (block, _) = Tlv.Block.wireDecodeWithBytes(bytes)
         if let blk = block {
             return Data(block: blk)
         } else {

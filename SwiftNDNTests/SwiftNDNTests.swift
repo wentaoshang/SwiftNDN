@@ -162,8 +162,7 @@ class SwiftNDNTests: XCTestCase {
         XCTAssertEqual(n00!.toUri(), nameUrl)
         
         let n0Encode = n0.wireEncode()
-        XCTAssert(n0Encode != nil)
-        let (n0blk, _) = Tlv.Block.wireDecode(n0Encode!)
+        let (n0blk, _) = Tlv.Block.wireDecodeWithBytes(n0Encode)
         XCTAssert(n0blk != nil)
         let n1 = Name(block: n0blk!)
         XCTAssert(n1 != nil)
@@ -172,8 +171,7 @@ class SwiftNDNTests: XCTestCase {
         let n2 = Name(url: nameUrl)
         XCTAssert(n2 != nil)
         let n2Encode = n2!.wireEncode()
-        XCTAssert(n2Encode != nil)
-        XCTAssert(n0.wireEncode()! == n2Encode!)
+        XCTAssert(n0.wireEncode() == n2Encode)
         XCTAssert(n0 == n2!)
         XCTAssert(n1! == n2!)
         
@@ -197,8 +195,7 @@ class SwiftNDNTests: XCTestCase {
         let emptyName1 = Name()
         XCTAssertEqual(emptyName1.toUri(), "/")
         let emptyEncode = emptyName1.wireEncode()
-        XCTAssert(emptyEncode != nil)
-        let emptyName2 = Name.wireDecode(emptyEncode!)
+        let emptyName2 = Name.wireDecode(emptyEncode)
         XCTAssert(emptyName2 != nil)
         XCTAssert(emptyName1 == emptyName2!)
         
@@ -308,19 +305,18 @@ class SwiftNDNTests: XCTestCase {
     
     func testNonNegativeIntegerTlv() {
         let ilt0 = Interest.InterestLifetime()
-        let ilt0Encode = ilt0.wireEncode()!
+        let ilt0Encode = ilt0.wireEncode()
         XCTAssert(ilt0Encode == [12, 2, 0x0F, 0xA0])
         
         let ilt1 = Interest.InterestLifetime(value: 0x123456)
-        let ilt1Encode = ilt1.wireEncode()!
+        let ilt1Encode = ilt1.wireEncode()
         XCTAssert(ilt1Encode == [12, 4, 0, 0x12, 0x34, 0x56])
     }
     
     func testInterest() {
         var i0 = Interest()
         let i0Encode = i0.wireEncode()
-        XCTAssert(i0Encode != nil)
-        var i1 = Interest.wireDecode(i0Encode!)
+        var i1 = Interest.wireDecode(i0Encode)
         XCTAssert(i1 != nil)
         XCTAssert(i0.name == i1!.name)
         XCTAssert(i0.nonce == i1!.nonce)
@@ -331,8 +327,7 @@ class SwiftNDNTests: XCTestCase {
         i2.setMustBeFresh()
         i2.setInterestLifetime(2000)
         let i2Encode = i2.wireEncode()
-        XCTAssert(i2Encode != nil)
-        var i3 = Interest.wireDecode(i2Encode!)
+        var i3 = Interest.wireDecode(i2Encode)
         XCTAssert(i3 != nil)
         XCTAssert(i3!.name.toUri() == "/a/b/c/%00%01")
         XCTAssert((i3!.getChildSelector())! == Interest.Selectors.ChildSelector.Val.LeftmostChild)
@@ -469,12 +464,12 @@ class SwiftNDNTests: XCTestCase {
         
         func run() {
             transport.connect()
-            transport.send(name1!.wireEncode()!)
-            transport.send(name2!.wireEncode()! + name3!.wireEncode()!)
-            let n4Encode = name4!.wireEncode()!
+            transport.send(name1!.wireEncode())
+            transport.send(name2!.wireEncode() + name3!.wireEncode())
+            let n4Encode = name4!.wireEncode()
             let half = n4Encode.count / 2
             transport.send([UInt8](n4Encode[0..<half]))
-            transport.send([UInt8](n4Encode[half..<n4Encode.count]) + name5!.wireEncode()!)
+            transport.send([UInt8](n4Encode[half..<n4Encode.count]) + name5!.wireEncode())
         }
     }
     
@@ -758,7 +753,7 @@ class SwiftNDNTests: XCTestCase {
         
         waitForExpectationsWithTimeout(6, handler: { error in
             if let err = error {
-                println("testFace: \(err.localizedDescription)")
+                println("testFace2: \(err.localizedDescription)")
             }
         })
         

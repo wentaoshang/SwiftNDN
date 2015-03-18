@@ -64,7 +64,7 @@ public class AsyncTcpTransport: NSObject, GCDAsyncSocketDelegate {
             buffer += bytes
             //println("AsyncTcpTransport: didReadData \(buffer)")
             while buffer.count > 0 {
-                let decoded = Tlv.Block.wireDecode(buffer)
+                let decoded = Tlv.Block.wireDecodeWithBytes(buffer)
                 if let blk = decoded.block {
                     face.onMessage(blk)
                     buffer.removeRange(0..<decoded.lengthRead)

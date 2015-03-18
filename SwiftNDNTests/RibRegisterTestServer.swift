@@ -48,7 +48,7 @@ public class RibRegisterTestServer: NSObject, GCDAsyncSocketDelegate {
         if let bytes = AsyncTcpTransport.byteArrayFromNSData(data) {
             buffer += bytes
             while buffer.count > 0 {
-                let decoded = Tlv.Block.wireDecode(buffer)
+                let decoded = Tlv.Block.wireDecodeWithBytes(buffer)
                 if let blk = decoded.block {
                     if let command = ControlCommand(block: blk) {
                         processCommand(sock, command: command)
@@ -65,30 +65,29 @@ public class RibRegisterTestServer: NSObject, GCDAsyncSocketDelegate {
     func sendInterest(name: Name) {
         var interest = Interest()
         interest.name = name
-        if let instEncode = interest.wireEncode() {
-            let inst = NSData(bytes: instEncode, length: instEncode.count)
-            self.clientSocket.writeData(inst, withTimeout: -1, tag: 0)
-        }
+        let instEncode = interest.wireEncode()
+        let inst = NSData(bytes: instEncode, length: instEncode.count)
+        self.clientSocket.writeData(inst, withTimeout: -1, tag: 0)
     }
     
     func processCommand(sock: GCDAsyncSocket!, command: ControlCommand) {
-        if command.name.toUri() == "/localhost/nfd" {
+        if command.prefix.toUri() == "/localhost/nfd" {
             if let prefix = command.parameters.name {
                 if prefix.toUri() == "/swift/ndn/face/test" {
                     var response = ControlResponse()
-                    if let responseEncode = response.wireEncode() {
-                        var data = Data()
-                        data.name = Name(name: command.fullName!)
-                        data.setContent(responseEncode)
-                        data.signatureValue = Data.SignatureValue(value: [UInt8](count: 64, repeatedValue: 0))
-                        if let encoded = data.wireEncode() {
-                            let echoData = NSData(bytes: encoded, length: encoded.count)
-                            sock.writeData(echoData, withTimeout: -1, tag: 0)
-                            self.timer?.setTimeout(2000) { [unowned self] in
-                                self.sendInterest(Name(url: "/swift/ndn/wrong/prefix")!)
-                                self.sendInterest(Name(url: "/swift/ndn/face/test/001")!)
-                            }
-                        }
+                    response.statusCode = StatusCode(value: 200)
+                    response.statusText = StatusText(value: "OK")!
+                    let responseEncode = response.wireEncode()
+                    var data = Data()
+                    data.name = Name(name: command.name)
+                    data.setContent(responseEncode)
+                    data.signatureValue = Data.SignatureValue(value: [UInt8](count: 64, repeatedValue: 11))
+                    let encoded = data.wireEncode()
+                    let echoData = NSData(bytes: encoded, length: encoded.count)
+                    sock.writeData(echoData, withTimeout: -1, tag: 0)
+                    self.timer?.setTimeout(2000) { [unowned self] in
+                        self.sendInterest(Name(url: "/swift/ndn/wrong/prefix")!)
+                        self.sendInterest(Name(url: "/swift/ndn/face/test/001")!)
                     }
                 }
             }
