@@ -118,7 +118,7 @@ public class Name: Tlv.Block {
         return self.components.isEmpty
     }
     
-    public override init() {
+    public init() {
         super.init(type: Tlv.NDNType.Name)
     }
     

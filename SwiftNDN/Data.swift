@@ -42,7 +42,7 @@ public class Data: Tlv.Block {
             
             var component = Name.Component(bytes: [0, 0])
             
-            public override init() {
+            public init() {
                 super.init(type: Tlv.NDNType.FinalBlockId)
             }
             
@@ -82,7 +82,7 @@ public class Data: Tlv.Block {
         var freshnessPeriod: FreshnessPeriod?
         var finalBlockID: FinalBlockID?
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.MetaInfo)
         }
         
@@ -131,7 +131,7 @@ public class Data: Tlv.Block {
     
     public class Content: Tlv.Block {
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.Content)
         }
         
@@ -172,7 +172,7 @@ public class Data: Tlv.Block {
             var name = Name()
             //TODO: support KeyDigest
             
-            public override init() {
+            public init() {
                 super.init(type: Tlv.NDNType.KeyLocator)
             }
             
@@ -211,7 +211,7 @@ public class Data: Tlv.Block {
         public var signatureType = SignatureType()
         public var keyLocator: KeyLocator?
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.SignatureInfo)
         }
         
@@ -257,7 +257,7 @@ public class Data: Tlv.Block {
     
     public class SignatureValue: Tlv.Block {
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.SignatureValue)
         }
         
@@ -279,7 +279,7 @@ public class Data: Tlv.Block {
     public var signatureInfo = SignatureInfo()
     public var signatureValue = SignatureValue()
     
-    public override init() {
+    public init() {
         super.init(type: Tlv.NDNType.Data)
     }
     

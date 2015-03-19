@@ -16,7 +16,7 @@ public class Interest: Tlv.Block {
             
             var filter = [[UInt8]]()
             
-            public override init() {
+            public init() {
                 super.init(type: Tlv.NDNType.Exclude)
             }
             
@@ -145,7 +145,7 @@ public class Interest: Tlv.Block {
         
         public class MustBeFresh: Tlv.Block {
             
-            public override init() {
+            public init() {
                 super.init(type: Tlv.NDNType.MustBeFresh)
             }
             
@@ -161,7 +161,7 @@ public class Interest: Tlv.Block {
         var childSelector: ChildSelector?
         var mustBeFresh: MustBeFresh?
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.Selectors)
         }
         
@@ -241,7 +241,7 @@ public class Interest: Tlv.Block {
     
     public class Nonce: Tlv.Block {
         
-        public override init() {
+        public init() {
             super.init(type: Tlv.NDNType.Nonce)
             value = [UInt8](count: 4, repeatedValue: 0)
             
@@ -269,7 +269,7 @@ public class Interest: Tlv.Block {
     public var scope: Scope?
     public var interestLifetime: InterestLifetime?
     
-    public override init() {
+    public init() {
         super.init(type: Tlv.NDNType.Interest)
     }
     

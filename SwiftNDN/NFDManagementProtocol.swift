@@ -89,7 +89,7 @@ public class ControlParameters: Tlv.Block {
     public var flags: Flags?
     public var expirePeriod: ExpirationPeriod?
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.ControlParameters)
     }
     
@@ -174,7 +174,7 @@ public class ControlResponse: Tlv.Block {
     public var statusCode = StatusCode()
     public var statusText = StatusText()
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.ControlResponse)
     }
     
@@ -383,7 +383,7 @@ public class FaceStatus: Tlv.Block {
     public var nInBytes = NInBytes()
     public var nOutBytes = NOutBytes()
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.FaceStatus)
     }
     
@@ -487,7 +487,7 @@ public class Route: Tlv.Block {
     public var flags = Flags()
     public var expirePeriod: ExpirationPeriod?
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.Route)
     }
     
@@ -541,7 +541,7 @@ public class RibEntry: Tlv.Block {
     public var name = Name()
     public var routes = [Route]()
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.RibEntry)
     }
     
@@ -609,7 +609,7 @@ public class NextHopRecord: Tlv.Block {
     public var faceID = FaceID()
     public var cost = Cost()
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.NextHopRecord)
     }
     
@@ -649,7 +649,7 @@ public class FibEntry: Tlv.Block {
     public var name = Name()
     public var nexthops = [NextHopRecord]()
     
-    public override init() {
+    public init() {
         super.init(type: NFDType.FibEntry)
     }
     

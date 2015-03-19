@@ -55,8 +55,6 @@ public class Tlv {
                 + Buffer.getVarNumberEncodedLength(self.type)
         }
         
-        public init() { }
-        
         public init(type: UInt64) {
             self.type = type
         }
@@ -155,14 +153,14 @@ public class NonNegativeIntegerTlv: Tlv.Block {
         return Buffer.getNonNegativeIntegerEncodedLength(self.integerValue)
     }
     
-    public override init() {
-        super.init()
+    public init() {
+        super.init(type: 0)
         self.type = self.tlvType
         self.integerValue = self.defaultValue
     }
     
     public init(value: UInt64) {
-        super.init()
+        super.init(type: 0)
         self.type = self.tlvType
         self.integerValue = value
     }
@@ -199,14 +197,14 @@ public class StringTlv: Tlv.Block {
     
     public var stringValue: String = ""
     
-    public override init() {
-        super.init()
+    public init() {
+        super.init(type: 0)
         self.type = self.tlvType
         self.stringValue = self.defaultValue
     }
     
     public init?(value: String) {
-        super.init()
+        super.init(type: 0)
         self.type = self.tlvType
         self.stringValue = value
     }
