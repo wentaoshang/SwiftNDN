@@ -324,6 +324,27 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x08])))
         XCTAssert(ex5.matchesComponent(Name.Component(bytes: [0x09])))
         XCTAssert(!ex5.matchesComponent(Name.Component(bytes: [0x0A])))
+        
+        let encode5 = ex5.wireEncode()
+        XCTAssert(encode5 == [16, 19, 19, 0, 8, 1, 0x01, 8, 1, 0x03, 8, 1, 0x05, 19, 0, 8, 1, 0x07, 8, 1, 0x09])
+        let (blk, _) = Tlv.Block.wireDecodeWithBytes(encode5)
+        let ex50 = Interest.Selectors.Exclude(block: blk!)
+        if let ex = ex50 {
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x00])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x01])))
+            XCTAssert(!ex.matchesComponent(Name.Component(bytes: [0x02])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x03])))
+            XCTAssert(!ex.matchesComponent(Name.Component(bytes: [0x04])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x05])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x06])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x07])))
+            XCTAssert(!ex.matchesComponent(Name.Component(bytes: [0x08])))
+            XCTAssert(ex.matchesComponent(Name.Component(bytes: [0x09])))
+            XCTAssert(!ex.matchesComponent(Name.Component(bytes: [0x0A])))
+        } else {
+            XCTFail("Exclude decoding fail")
+        }
+        
     }
     
     func testNonNegativeIntegerTlv() {

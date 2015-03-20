@@ -14,6 +14,20 @@ public class Interest: Tlv.Block {
         
         public class Exclude: Tlv.Block {
             
+            public class Any: Tlv.Block {
+                
+                public init() {
+                    super.init(type: Tlv.NDNType.Any)
+                }
+                
+                public init?(block: Tlv.Block) {
+                    super.init(type: block.type)
+                    if block.type != Tlv.NDNType.Any {
+                        return nil
+                    }
+                }
+            }
+            
             var filter = [[UInt8]]()
             
             public init() {
@@ -111,7 +125,11 @@ public class Interest: Tlv.Block {
             public override func wireEncodeValue() -> [UInt8] {
                 var buf = Buffer(capacity: Int(self.length))
                 for f in filter {
-                    Name.Component(bytes: f).wireEncode(buf)
+                    if f.isEmpty {
+                        Any().wireEncode(buf)
+                    } else {
+                        Name.Component(bytes: f).wireEncode(buf)
+                    }
                 }
                 self.value = buf.buffer
                 return self.value
@@ -120,7 +138,11 @@ public class Interest: Tlv.Block {
             public override var length: UInt64 {
                 var l: UInt64 = 0
                 for f in filter {
-                    l += Name.Component(bytes: f).totalLength
+                    if f.isEmpty {
+                        l += Any().totalLength
+                    } else {
+                        l += Name.Component(bytes: f).totalLength
+                    }
                 }
                 return l
             }
