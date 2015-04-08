@@ -198,9 +198,9 @@ public class Data: Tlv.Block {
                 }
             }
             
-            public override func wireEncode() -> [UInt8] {
+            public override func wireEncodeValue() -> [UInt8] {
                 self.value = self.name.wireEncode()
-                return super.wireEncode()
+                return self.value
             }
             
             public override var length: UInt64 {
