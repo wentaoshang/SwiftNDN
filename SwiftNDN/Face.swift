@@ -249,7 +249,7 @@ public class Face: AsyncTransportDelegate {
         }
         
         // Append to table first
-        let lentry = registeredPrefixes.append(prefix, onInterest)
+        let lentry = registeredPrefixes.append(prefix, onInterestCb: onInterest)
 
         // Prepare command interest
         var param = ControlParameters()

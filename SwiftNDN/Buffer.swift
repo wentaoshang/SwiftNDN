@@ -45,7 +45,7 @@ public class Buffer: Printable {
         return self
     }
     
-    public class func getVarNumberEncodedLength(number: UInt64) -> Int {
+    public class func getVarNumberEncodedLength(number: UInt64) -> UInt64 {
         switch number {
         case let x where x < 253: return 1
         case let x where x >= 253 && x <= 0xFFFF: return 3
@@ -206,7 +206,7 @@ public class Buffer: Printable {
     public class func stringFromByteArray(bytes: [UInt8]) -> String? {
         let data = NSData(bytes: bytes, length: bytes.count)
         if let string = NSString(data: data, encoding: NSASCIIStringEncoding) {
-            return string
+            return string as String
         } else {
             return nil
         }

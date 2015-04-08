@@ -402,40 +402,40 @@ class SwiftNDNTests: XCTestCase {
         var content: [UInt8] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         d0.setContent(content)
         
-//        var keychainSignExpectation = expectationWithDescription("sign data")
-//        var keychainVerifyExpectation = expectationWithDescription("verify data")
-//        
-//        let keychain = KeyChain()
-//        XCTAssert(keychain != nil)
-//        
-//        keychain?.sign(d0, onFinish: { (signedData: Data) in
-//            keychainSignExpectation.fulfill()
-//            
-//            var d0Encode = signedData.wireEncode()
-//            XCTAssert(d0Encode != nil)
-//            
-//            var d1 = Data.wireDecode(d0Encode!)
-//            XCTAssert(d1 != nil)
-//            XCTAssert(d1!.name.toUri() == name)
-//            XCTAssert((d1!.getFreshnessPeriod())! == 40000)
-//            XCTAssert(d1!.getContent() == content)
-//
-//            keychain?.verify(d1!, onSuccess: {
-//                keychainVerifyExpectation.fulfill()
-//            }, onFailure: { message in
-//                println("testData: \(message)")
-//            })
-//        }, onError: { message in
-//            println("testData: \(message)")
-//        })
-//        
-//        waitForExpectationsWithTimeout(1, handler: { error in
-//            if let err = error {
-//                println("testData: \(err.localizedDescription)")
-//            }
-//        })
-//        
-//        keychain?.clean()
+        var keychainSignExpectation = expectationWithDescription("sign data")
+        var keychainVerifyExpectation = expectationWithDescription("verify data")
+        
+        let keychain = KeyChain()
+        XCTAssert(keychain != nil)
+        
+        keychain?.sign(d0, onFinish: { (signedData: Data) in
+            keychainSignExpectation.fulfill()
+            
+            var d0Encode = signedData.wireEncode()
+            println(d0Encode)
+            
+            var d1 = Data.wireDecode(d0Encode)
+            XCTAssert(d1 != nil)
+            XCTAssert(d1!.name.toUri() == name)
+            XCTAssert((d1!.getFreshnessPeriod())! == 40000)
+            XCTAssert(d1!.getContent() == content)
+
+            keychain?.verify(d1!, onSuccess: {
+                keychainVerifyExpectation.fulfill()
+            }, onFailure: { message in
+                println("testData: \(message)")
+            })
+        }, onError: { message in
+            println("testData: \(message)")
+        })
+        
+        waitForExpectationsWithTimeout(1, handler: { error in
+            if let err = error {
+                println("testData: \(err.localizedDescription)")
+            }
+        })
+        
+        keychain?.clean()
     }
     
     class TlvEchoClient: AsyncTransportDelegate {

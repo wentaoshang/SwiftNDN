@@ -82,7 +82,7 @@ public class Name: Tlv.Block {
                     output.appendFormat("%%%02X", b)
                 }
             }
-            return output
+            return output as String
             //var uri = NSString(bytes: self.value, length: self.value.count, encoding: NSASCIIStringEncoding)
             //return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet()))!
             //return (uri?.stringByAddingPercentEncodingWithAllowedCharacters(NDNURIAllowedCharacterSet))!
@@ -152,7 +152,7 @@ public class Name: Tlv.Block {
         super.init(type: Tlv.NDNType.Name)
         let ndnNameRegex = NSRegularExpression(pattern: "^(?:(?:ndn://[^/]*)|(?:ndn:))?(/.*)$", options: nil, error: nil)
         if let match = ndnNameRegex?.firstMatchInString(url, options: nil,
-            range: NSRange(location: 0, length: countElements(url)))
+            range: NSRange(location: 0, length: count(url)))
         {
             if match.numberOfRanges != 2 {
                 return nil

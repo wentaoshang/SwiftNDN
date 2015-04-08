@@ -140,7 +140,7 @@ public class KeyChain {
                         onFailure("KeyChain.verify: \(CFErrorCopyDescription(error))")
                         return
                     }
-                    if let verified = message as CFBooleanRef! {
+                    if let verified = message as! CFBooleanRef! {
                         if verified == kCFBooleanTrue {
                             success = success && true
                         } else {

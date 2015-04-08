@@ -192,7 +192,7 @@ public class StringTlv: Tlv.Block {
     }
     
     public override var length: UInt64 {
-        return UInt64(self.stringValue.utf16Count)
+        return UInt64(count(self.stringValue.utf16))
     }
     
     public var stringValue: String = ""
