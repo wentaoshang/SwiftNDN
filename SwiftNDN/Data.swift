@@ -106,7 +106,7 @@ public class Data: Tlv.Block {
         }
         
         public override func wireEncodeValue() -> [UInt8] {
-            var buf = Buffer(capacity: Int(self.length))
+            let buf = Buffer(capacity: Int(self.length))
             self.contentType?.wireEncode(buf)
             self.freshnessPeriod?.wireEncode(buf)
             self.finalBlockID?.wireEncode(buf)
@@ -238,7 +238,7 @@ public class Data: Tlv.Block {
         }
         
         public override func wireEncodeValue() -> [UInt8] {
-            var buf = Buffer(capacity: Int(self.length))
+            let buf = Buffer(capacity: Int(self.length))
             self.signatureType.wireEncode(buf)
             self.keyLocator?.wireEncode(buf)
             self.value = buf.buffer
@@ -321,7 +321,7 @@ public class Data: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.name.wireEncode(buf)
         self.metaInfo.wireEncode(buf)
         self.content.wireEncode(buf)

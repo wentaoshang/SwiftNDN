@@ -29,9 +29,10 @@ public class RibRegisterTestServer: NSObject, GCDAsyncSocketDelegate {
     public func start() {
         acceptSocket = GCDAsyncSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
         
-        var error: NSError?
-        if (!acceptSocket.acceptOnInterface(host, port: port, error: &error)) {
-            println("FaceTestServer: acceptOnInterface: \(error!.localizedDescription)")
+        do {
+            try acceptSocket.acceptOnInterface(host, port: port)
+        } catch let error as NSError {
+            print("FaceTestServer: acceptOnInterface: \(error.localizedDescription)")
             return
         }
     }
@@ -63,7 +64,7 @@ public class RibRegisterTestServer: NSObject, GCDAsyncSocketDelegate {
     }
     
     func sendInterest(name: Name) {
-        var interest = Interest()
+        let interest = Interest()
         interest.name = name
         let instEncode = interest.wireEncode()
         let inst = NSData(bytes: instEncode, length: instEncode.count)
@@ -74,11 +75,11 @@ public class RibRegisterTestServer: NSObject, GCDAsyncSocketDelegate {
         if command.prefix.toUri() == "/localhost/nfd" {
             if let prefix = command.parameters.name {
                 if prefix.toUri() == "/swift/ndn/face/test" {
-                    var response = ControlResponse()
+                    let response = ControlResponse()
                     response.statusCode = StatusCode(value: 200)
                     response.statusText = StatusText(value: "OK")!
                     let responseEncode = response.wireEncode()
-                    var data = Data()
+                    let data = Data()
                     data.name = Name(name: command.name)
                     data.setContent(responseEncode)
                     data.signatureValue = Data.SignatureValue(value: [UInt8](count: 64, repeatedValue: 11))

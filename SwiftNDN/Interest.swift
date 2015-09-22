@@ -123,7 +123,7 @@ public class Interest: Tlv.Block {
             }
             
             public override func wireEncodeValue() -> [UInt8] {
-                var buf = Buffer(capacity: Int(self.length))
+                let buf = Buffer(capacity: Int(self.length))
                 for f in filter {
                     if f.isEmpty {
                         Any().wireEncode(buf)
@@ -207,7 +207,7 @@ public class Interest: Tlv.Block {
         }
         
         public override func wireEncodeValue() -> [UInt8] {
-            var buf = Buffer(capacity: Int(self.length))
+            let buf = Buffer(capacity: Int(self.length))
             
             self.exclude?.wireEncode(buf)
             self.childSelector?.wireEncode(buf)
@@ -394,7 +394,7 @@ public class Interest: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.name.wireEncode(buf)
         self.selectors?.wireEncode(buf)
         self.nonce.wireEncode(buf)
@@ -450,7 +450,7 @@ public func == (lhs: Interest.Nonce, rhs: Interest.Nonce) -> Bool {
 }
 
 public func getTimeSinceEpochInMS() -> UInt64 {
-    var now = mach_absolute_time()
+    let now = mach_absolute_time()
     var tinfo = mach_timebase_info(numer: 1, denom: 1)
     mach_timebase_info(&tinfo)
     return now * UInt64(tinfo.numer) / UInt64(tinfo.denom) / 1000000

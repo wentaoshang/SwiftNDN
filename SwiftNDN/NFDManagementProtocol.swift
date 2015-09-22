@@ -127,7 +127,7 @@ public class ControlParameters: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.name?.wireEncode(buf)
         self.faceID?.wireEncode(buf)
         self.origin?.wireEncode(buf)
@@ -211,7 +211,7 @@ public class ControlResponse: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.statusCode.wireEncode(buf)
         self.statusText.wireEncode(buf)
         self.value = buf.buffer
@@ -427,7 +427,7 @@ public class FaceStatus: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.faceID.wireEncode(buf)
         self.uri.wireEncode(buf)
         self.localUri.wireEncode(buf)
@@ -514,7 +514,7 @@ public class Route: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.faceID.wireEncode(buf)
         self.origin.wireEncode(buf)
         self.cost.wireEncode(buf)
@@ -571,7 +571,7 @@ public class RibEntry: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.name.wireEncode(buf)
         for rt in routes {
             rt.wireEncode(buf)
@@ -630,7 +630,7 @@ public class NextHopRecord: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.faceID.wireEncode(buf)
         self.cost.wireEncode(buf)
         self.value = buf.buffer
@@ -679,7 +679,7 @@ public class FibEntry: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         self.name.wireEncode(buf)
         for nh in self.nexthops {
             nh.wireEncode(buf)

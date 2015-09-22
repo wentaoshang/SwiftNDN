@@ -71,7 +71,7 @@ public class Name: Tlv.Block {
         }
         
         public func toUri() -> String {
-            var output = NSMutableString(capacity: self.value.count * 2)
+            let output = NSMutableString(capacity: self.value.count * 2)
             for b in self.value {
                 if (b >= 0x30 && b <= 0x39) || (b >= 0x41 && b <= 0x5A)
                     || (b >= 0x61 && b <= 0x7A) || b == 0x2B || b == 0x2D
@@ -150,9 +150,9 @@ public class Name: Tlv.Block {
     
     public init?(url: String) {
         super.init(type: Tlv.NDNType.Name)
-        let ndnNameRegex = NSRegularExpression(pattern: "^(?:(?:ndn://[^/]*)|(?:ndn:))?(/.*)$", options: nil, error: nil)
-        if let match = ndnNameRegex?.firstMatchInString(url, options: nil,
-            range: NSRange(location: 0, length: count(url)))
+        let ndnNameRegex = try? NSRegularExpression(pattern: "^(?:(?:ndn://[^/]*)|(?:ndn:))?(/.*)$", options: [])
+        if let match = ndnNameRegex?.firstMatchInString(url, options: [],
+            range: NSRange(location: 0, length: url.characters.count))
         {
             if match.numberOfRanges != 2 {
                 return nil
@@ -196,7 +196,7 @@ public class Name: Tlv.Block {
     }
     
     public func appendNumber(number: UInt64) -> Name {
-        var arr = Buffer.byteArrayFromNonNegativeInteger(number)
+        let arr = Buffer.byteArrayFromNonNegativeInteger(number)
         return self.appendComponent(arr)
     }
     
@@ -215,7 +215,7 @@ public class Name: Tlv.Block {
         if length >= self.size {
             return Name(name: self)
         } else {
-            var prefix = Name()
+            let prefix = Name()
             prefix.components = [Component](self.components[0..<length])
             return prefix
         }
@@ -272,7 +272,7 @@ public class Name: Tlv.Block {
     }
     
     public override func wireEncodeValue() -> [UInt8] {
-        var buf = Buffer(capacity: Int(self.length))
+        let buf = Buffer(capacity: Int(self.length))
         for c in self.components {
             c.wireEncode(buf)
         }

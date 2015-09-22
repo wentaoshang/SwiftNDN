@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Buffer: Printable {
+public class Buffer: CustomStringConvertible {
     
     var buffer: [UInt8]
     var head: Int  // only used for decoding

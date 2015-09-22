@@ -36,7 +36,7 @@ public class Timer {
     public func setTimeout(ms: UInt64, callback: () -> Void) {
         self.callback = callback
         self.isSet = true
-        var delay = dispatch_time(DISPATCH_TIME_NOW, Int64(ms) * 1000000)
+        let delay = dispatch_time(DISPATCH_TIME_NOW, Int64(ms) * 1000000)
         dispatch_source_set_timer(self.timer, delay, UInt64.max, ms * 100000)
         dispatch_source_set_event_handler(self.timer, { [unowned self] in self.handler() })
         dispatch_resume(self.timer)
@@ -122,7 +122,7 @@ public class Face: AsyncTransportDelegate {
             if let entry = Entry(interest: interest,
                 onDataCb: onDataCb, onTimeoutCb: onTimeoutCb)
             {
-                var listEntry = table.appendAtTail(entry)
+                let listEntry = table.appendAtTail(entry)
                 let lifetime = interest.getInterestLifetime() ?? 4000
                 entry.timer.setTimeout(lifetime, callback: {
                     listEntry.detach()
@@ -252,7 +252,7 @@ public class Face: AsyncTransportDelegate {
         let lentry = registeredPrefixes.append(prefix, onInterestCb: onInterest)
 
         // Prepare command interest
-        var param = ControlParameters()
+        let param = ControlParameters()
         param.name = prefix
         
         var ribRegPrefix: Name

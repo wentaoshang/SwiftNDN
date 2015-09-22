@@ -60,7 +60,7 @@ public class LinkedList<T> {
     }
     
     public func appendAtTail(t: T) -> ListEntry<T> {
-        var entry = ListEntry<T>(value: t)
+        let entry = ListEntry<T>(value: t)
         tail.prev?.next = entry
         entry.prev = tail.prev
         entry.next = tail
@@ -69,7 +69,7 @@ public class LinkedList<T> {
     }
     
     public func appendInFront(t: T) -> ListEntry<T> {
-        var entry = ListEntry<T>(value: t)
+        let entry = ListEntry<T>(value: t)
         head.next?.prev = entry
         entry.next = head.next
         entry.prev = head
@@ -90,7 +90,7 @@ public class LinkedList<T> {
     public func forEachEntry(action: (t: ListEntry<T>) -> Void) {
         var iter = head.next
         while iter !== tail && iter != nil {
-            var iterNext = iter!.next
+            let iterNext = iter!.next
             action(t: iter!)
             iter = iterNext
         }
@@ -131,7 +131,7 @@ public class LinkedList<T> {
     public func removeOneIf(condition: (t: T) -> Bool) -> Bool {
         var iter = head.next
         while iter !== tail && iter != nil {
-            var iterNext = iter?.next
+            let iterNext = iter?.next
             if let entry = iter {
                 if let value = entry.value {
                     if condition(t: value) {
@@ -149,7 +149,7 @@ public class LinkedList<T> {
         var removedSomething = false
         var iter = head.next
         while iter !== tail && iter != nil {
-            var iterNext = iter?.next
+            let iterNext = iter?.next
             if let entry = iter {
                 if let value = entry.value {
                     if condition(t: value) {

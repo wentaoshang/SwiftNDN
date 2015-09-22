@@ -26,9 +26,10 @@ public class TlvEchoServer: NSObject, GCDAsyncSocketDelegate {
     public func start() {
         acceptSocket = GCDAsyncSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
 
-        var error: NSError?
-        if (!acceptSocket.acceptOnInterface(host, port: port, error: &error)) {
-            println("TlvEchoServer: acceptOnInterface: \(error!.localizedDescription)")
+        do {
+            try acceptSocket.acceptOnInterface(host, port: port)
+        } catch let error as NSError {
+            print("TlvEchoServer: acceptOnInterface: \(error.localizedDescription)")
             return
         }
     }

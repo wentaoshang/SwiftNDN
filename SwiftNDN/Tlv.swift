@@ -65,7 +65,7 @@ public class Tlv {
         }
         
         public func wireEncode() -> [UInt8] {
-            var buf = Buffer(capacity: Int(self.totalLength))
+            let buf = Buffer(capacity: Int(self.totalLength))
             self.wireEncode(buf)
             return buf.buffer
         }
@@ -192,7 +192,7 @@ public class StringTlv: Tlv.Block {
     }
     
     public override var length: UInt64 {
-        return UInt64(count(self.stringValue.utf16))
+        return UInt64(self.stringValue.utf16.count)
     }
     
     public var stringValue: String = ""

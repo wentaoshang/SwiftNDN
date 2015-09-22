@@ -26,9 +26,10 @@ public class FaceTestServer: NSObject, GCDAsyncSocketDelegate {
     public func start() {
         acceptSocket = GCDAsyncSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
         
-        var error: NSError?
-        if (!acceptSocket.acceptOnInterface(host, port: port, error: &error)) {
-            println("FaceTestServer: acceptOnInterface: \(error!.localizedDescription)")
+        do {
+            try acceptSocket.acceptOnInterface(host, port: port)
+        } catch let error as NSError {
+            print("FaceTestServer: acceptOnInterface: \(error.localizedDescription)")
             return
         }
     }
@@ -61,7 +62,7 @@ public class FaceTestServer: NSObject, GCDAsyncSocketDelegate {
 
     func processInterest(sock: GCDAsyncSocket!, interest: Interest) {
         if interest.name.toUri() == "/a/b/c" {
-            var data = Data()
+            let data = Data()
             data.name = Name(name: interest.name)
             data.name.appendComponent("%00%02")
             data.setContent([0, 1, 2, 3, 4, 5, 6, 7])

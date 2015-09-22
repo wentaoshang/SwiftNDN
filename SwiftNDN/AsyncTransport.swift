@@ -36,10 +36,11 @@ public class AsyncTcpTransport: NSObject, GCDAsyncSocketDelegate {
     public func connect() {
         socket = GCDAsyncSocket(delegate: self, delegateQueue: dispatch_get_main_queue())
         // or use global dispatch queue for multithreading?
-        var error: NSError?
-        if (!socket.connectToHost(host, onPort: port, error: &error)) {
-            println("AsyncTcpTransport: connectToHost: \(error!.localizedDescription)")
-            face.onError(error!.description)
+        do {
+            try socket.connectToHost(host, onPort: port)
+        } catch let error as NSError {
+            print("AsyncTcpTransport: connectToHost: \(error.localizedDescription)")
+            face.onError(error.description)
             return
         }
     }

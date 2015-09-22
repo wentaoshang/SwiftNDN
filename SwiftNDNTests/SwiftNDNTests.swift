@@ -34,7 +34,7 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(b1 == expectedContent1)
         XCTAssertEqual(b1.size, expectedContent1.count)
         
-        var b1b = Buffer(buffer: expectedContent1)
+        let b1b = Buffer(buffer: expectedContent1)
         XCTAssert(b1b === b1)
         XCTAssert(b1b == b1)
         
@@ -358,35 +358,35 @@ class SwiftNDNTests: XCTestCase {
     }
     
     func testInterest() {
-        var i0 = Interest()
+        let i0 = Interest()
         let i0Encode = i0.wireEncode()
-        var i1 = Interest.wireDecode(i0Encode)
+        let i1 = Interest.wireDecode(i0Encode)
         XCTAssert(i1 != nil)
         XCTAssert(i0.name == i1!.name)
         XCTAssert(i0.nonce == i1!.nonce)
         
-        var i2 = Interest()
+        let i2 = Interest()
         i2.name = Name(url: "/a/b/c/%00%01")!
         i2.setChildSelector(Interest.Selectors.ChildSelector.Val.LeftmostChild)
         i2.setMustBeFresh()
         i2.setInterestLifetime(2000)
         let i2Encode = i2.wireEncode()
-        var i3 = Interest.wireDecode(i2Encode)
+        let i3 = Interest.wireDecode(i2Encode)
         XCTAssert(i3 != nil)
         XCTAssert(i3!.name.toUri() == "/a/b/c/%00%01")
         XCTAssert((i3!.getChildSelector())! == Interest.Selectors.ChildSelector.Val.LeftmostChild)
         XCTAssert((i3!.getInterestLifetime())! == 2000)
         
-        var i4 = Interest()
+        let i4 = Interest()
         i4.name = Name(url: "/a/b/c")!
         i4.setExclude([[], [0x00, 0x02]])
-        var d40 = Data()
+        let d40 = Data()
         d40.name = Name(url: "/a/b/c")!
-        var d41 = Data()
+        let d41 = Data()
         d41.name = Name(url: "/a/b/c/%00%05")!
-        var d42 = Data()
+        let d42 = Data()
         d42.name = Name(url: "/a/b/c/%00%01")!
-        var d43 = Data()
+        let d43 = Data()
         d43.name = Name(url: "/a/b")!
         XCTAssert(i4.matchesData(d40))
         XCTAssert(i4.matchesData(d41))
@@ -395,15 +395,15 @@ class SwiftNDNTests: XCTestCase {
     }
     
     func testData() {
-        var name = "/a/b/c/d/%00%01"
-        var d0 = Data()
+        let name = "/a/b/c/d/%00%01"
+        let d0 = Data()
         d0.name = Name(url: name)!
         d0.setFreshnessPeriod(40000)
-        var content: [UInt8] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        let content: [UInt8] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         d0.setContent(content)
         
-        var keychainSignExpectation = expectationWithDescription("sign data")
-        var keychainVerifyExpectation = expectationWithDescription("verify data")
+        let keychainSignExpectation = expectationWithDescription("sign data")
+        let keychainVerifyExpectation = expectationWithDescription("verify data")
         
         let keychain = KeyChain()
         XCTAssert(keychain != nil)
@@ -411,10 +411,10 @@ class SwiftNDNTests: XCTestCase {
         keychain?.sign(d0, onFinish: { (signedData: Data) in
             keychainSignExpectation.fulfill()
             
-            var d0Encode = signedData.wireEncode()
-            println(d0Encode)
+            let d0Encode = signedData.wireEncode()
+            print(d0Encode)
             
-            var d1 = Data.wireDecode(d0Encode)
+            let d1 = Data.wireDecode(d0Encode)
             XCTAssert(d1 != nil)
             XCTAssert(d1!.name.toUri() == name)
             XCTAssert((d1!.getFreshnessPeriod())! == 40000)
@@ -423,15 +423,15 @@ class SwiftNDNTests: XCTestCase {
             keychain?.verify(d1!, onSuccess: {
                 keychainVerifyExpectation.fulfill()
             }, onFailure: { message in
-                println("testData: \(message)")
+                print("testData: \(message)")
             })
         }, onError: { message in
-            println("testData: \(message)")
+            print("testData: \(message)")
         })
         
         waitForExpectationsWithTimeout(1, handler: { error in
             if let err = error {
-                println("testData: \(err.localizedDescription)")
+                print("testData: \(err.localizedDescription)")
             }
         })
         
@@ -518,10 +518,10 @@ class SwiftNDNTests: XCTestCase {
     }
     
     func testTransport() {
-        var server = TlvEchoServer()
+        let server = TlvEchoServer()
         server.start()
         
-        var client = TlvEchoClient()
+        let client = TlvEchoClient()
         client.openExpectation = expectationWithDescription("open transport")
         client.receiveName1Expectation = expectationWithDescription("receive name1")
         client.receiveName2Expectation = expectationWithDescription("receive name2")
@@ -533,14 +533,14 @@ class SwiftNDNTests: XCTestCase {
         
         waitForExpectationsWithTimeout(4, handler: { error in
             if let err = error {
-                println("testTransport: \(err.localizedDescription)")
+                print("testTransport: \(err.localizedDescription)")
             }
         })
     }
     
     func testTimer() {
         if let timer = Timer() {
-            var timerExpectation = expectationWithDescription("fire timer")
+            let timerExpectation = expectationWithDescription("fire timer")
             let startTime = mach_absolute_time()
             timer.setTimeout(2000) {
                 timerExpectation.fulfill()
@@ -554,7 +554,7 @@ class SwiftNDNTests: XCTestCase {
             
             waitForExpectationsWithTimeout(3, handler: { error in
                 if let err = error {
-                    println("testTimer: \(err.localizedDescription)")
+                    print("testTimer: \(err.localizedDescription)")
                 }
             })
         }
@@ -563,27 +563,27 @@ class SwiftNDNTests: XCTestCase {
         timer1 = nil
         XCTAssert(true, "should not crash")
         
-        var waitForTimerExpectation = expectationWithDescription("wait for cancelled timer")
+        let waitForTimerExpectation = expectationWithDescription("wait for cancelled timer")
         var timer2Wait: Timer! = Timer()
         timer2Wait.setTimeout(1000) {
             XCTFail("Handler should not be called")
         }
         timer2Wait = nil  // should cancel the timer in deinitializer
         
-        var waitingTimer: Timer! = Timer()
+        let waitingTimer: Timer! = Timer()
         waitingTimer.setTimeout(2000) {
             waitForTimerExpectation.fulfill()
         }
         
         waitForExpectationsWithTimeout(3, handler: { error in
             if let err = error {
-                println("testTimer: \(err.localizedDescription)")
+                print("testTimer: \(err.localizedDescription)")
             }
         })
     }
     
     func testLinkedList() {
-        var list = LinkedList<Int>()
+        let list = LinkedList<Int>()
         XCTAssert(list.isEmpty == true)
         XCTAssert(list.size == 0)
         list.appendAtTail(0)
@@ -594,7 +594,7 @@ class SwiftNDNTests: XCTestCase {
         XCTAssert(list.isEmpty == false)
         XCTAssert(list.size == 5)
         XCTAssert(list.findOneIf({ $0 == -1}) == nil)
-        var t = list.findOneIf({ $0 == 2 })
+        let t = list.findOneIf({ $0 == 2 })
         XCTAssert(t != nil)
         XCTAssert(t! == 2)
         XCTAssert(list.removeOneIf({ $0 == 2}) == true)
@@ -614,13 +614,13 @@ class SwiftNDNTests: XCTestCase {
             }
         }
         
-        var l2 = LinkedList<Int>()
+        let l2 = LinkedList<Int>()
         l2.appendAtTail(1)
         l2.appendAtTail(2)
         l2.appendAtTail(3)
         l2.appendAtTail(4)
         l2.appendAtTail(5)
-        var listSum = ListSum()
+        let listSum = ListSum()
         l2.forEach(listSum.add)
         XCTAssert(listSum.sum == 15)
     }
@@ -639,13 +639,13 @@ class SwiftNDNTests: XCTestCase {
         }
         
         func onOpen() {
-            var i0 = Interest()
+            let i0 = Interest()
             i0.name = Name(url: "/a/b/c")!
             i0.setInterestLifetime(1000)
             face.expressInterest(i0, onData: { [unowned self] in self.onI0Data($0, d0: $1) },
                 onTimeout: { [unowned self] in self.onI0Timeout($0) })
             
-            var i01 = Interest()
+            let i01 = Interest()
             i01.name = Name(url: "/a/b/c/%00%02")!
             face.expressInterest(i0, onData: { [unowned self] in self.onI01Data($0, d01: $1) },
                 onTimeout: { [unowned self] in self.onI01Timeout($0) })
@@ -656,7 +656,7 @@ class SwiftNDNTests: XCTestCase {
             XCTAssertEqual(d0.name.toUri(), "/a/b/c/%00%02")
             XCTAssert(d0.getContent() == [0, 1, 2, 3, 4, 5, 6, 7])
             
-            var i1 = Interest()
+            let i1 = Interest()
             i1.name = Name(url: "/a/b/d")!
             i1.setInterestLifetime(1500)
             face.expressInterest(i1, onData: { [unowned self] in self.onI1Data($0, d1: $1) },
@@ -743,7 +743,7 @@ class SwiftNDNTests: XCTestCase {
         }
         
         func onRegFailure(msg: String) {
-            println("RibRegisterTestClient: register prefix error: \(msg)")
+            print("RibRegisterTestClient: register prefix error: \(msg)")
             XCTFail("register prefix")
         }
         
@@ -777,7 +777,7 @@ class SwiftNDNTests: XCTestCase {
         
         waitForExpectationsWithTimeout(6, handler: { error in
             if let err = error {
-                println("testFace: \(err.localizedDescription)")
+                print("testFace: \(err.localizedDescription)")
             }
         })
         
@@ -797,7 +797,7 @@ class SwiftNDNTests: XCTestCase {
         
         waitForExpectationsWithTimeout(6, handler: { error in
             if let err = error {
-                println("testFace2: \(err.localizedDescription)")
+                print("testFace2: \(err.localizedDescription)")
             }
         })
         
