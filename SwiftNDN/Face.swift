@@ -264,7 +264,7 @@ public class Face: AsyncTransportDelegate {
         
         let nfdRibRegisterInterest = ControlCommand(prefix: ribRegPrefix,
             module: Name.Component(url: "rib")!, verb: Name.Component(url: "register")!, param: param)
-        let ret = self.expressInterest(nfdRibRegisterInterest, onData: { [unowned self] _, d in
+        let ret = self.expressInterest(nfdRibRegisterInterest, onData: { _, d in
             let content = d.getContent()
             if let response = ControlResponse.wireDecode(content) {
                 if response.statusCode.integerValue == 200 {
@@ -275,7 +275,7 @@ public class Face: AsyncTransportDelegate {
             } else {
                 onRegisterFailure?("Malformat control response")
             }
-            }, onTimeout: { [unowned self] _ in
+            }, onTimeout: { [unowned lentry] _ in
                 onRegisterFailure?("Command Interest timeout")
                 lentry.detach()
         })

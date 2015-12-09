@@ -560,8 +560,9 @@ class SwiftNDNTests: XCTestCase {
         }
         
         var timer1: Timer? = Timer()
+        XCTAssert(timer1 != nil, "should successfully create a timer")
         timer1 = nil
-        XCTAssert(true, "should not crash")
+        XCTAssert(timer1 == nil, "should not crash")
         
         let waitForTimerExpectation = expectationWithDescription("wait for cancelled timer")
         var timer2Wait: Timer! = Timer()
