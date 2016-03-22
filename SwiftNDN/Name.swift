@@ -200,12 +200,13 @@ public class Name: Tlv.Block {
         return self.appendComponent(arr)
     }
     
-    public func getComponentByIndex(var index: Int) -> Component? {
-        if index < 0 {
-            index = self.components.count + index
+    public func getComponentByIndex(index: Int) -> Component? {
+        var i = index
+        if i < 0 {
+            i = self.components.count + i
         }
-        if index < self.components.count && index >= 0 {
-            return self.components[index]
+        if i < self.components.count && i >= 0 {
+            return self.components[i]
         } else {
             return nil
         }

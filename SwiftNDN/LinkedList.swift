@@ -41,7 +41,7 @@ public class LinkedList<T> {
         var s = 0
         var iter = head.next
         while iter !== tail && iter != nil {
-            ++s
+            s += 1
             iter = iter?.next
         }
         return s
