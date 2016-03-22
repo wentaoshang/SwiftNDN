@@ -7,23 +7,37 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3738120B1AA5431900D8627F /* AsyncTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738120A1AA5431900D8627F /* AsyncTransport.swift */; };
-		3738120F1AA5495800D8627F /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3738120C1AA5495800D8627F /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3738120D1AA5495800D8627F /* GCDAsyncSocket.m */; };
 		373812131AA6423600D8627F /* TlvEchoServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812121AA6423600D8627F /* TlvEchoServer.swift */; };
-		373812181AA6ED2C00D8627F /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812171AA6ED2C00D8627F /* Data.swift */; };
-		3738121E1AA8352900D8627F /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121D1AA8352900D8627F /* KeyChain.swift */; };
-		373812201AA9532E00D8627F /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121F1AA9532E00D8627F /* Face.swift */; };
 		37725BD81AA1556C0007BF12 /* SwiftNDN.h in Headers */ = {isa = PBXBuildFile; fileRef = 37725BD71AA1556C0007BF12 /* SwiftNDN.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37725BDE1AA1556C0007BF12 /* SwiftNDN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37725BD21AA1556C0007BF12 /* SwiftNDN.framework */; };
 		37725BE51AA1556C0007BF12 /* SwiftNDNTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */; };
-		37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEE1AA1558A0007BF12 /* Buffer.swift */; };
-		37725BF21AA1558A0007BF12 /* Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEF1AA1558A0007BF12 /* Name.swift */; };
-		37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BF01AA1558A0007BF12 /* Tlv.swift */; };
-		37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725C0A1AA28DAD0007BF12 /* Interest.swift */; };
+		377F41451CA1FAAA00F5A019 /* SwiftNDNTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = 377F41441CA1FAAA00F5A019 /* SwiftNDNTouch.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		377F414C1CA1FAAA00F5A019 /* SwiftNDNTouch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 377F41421CA1FAA900F5A019 /* SwiftNDNTouch.framework */; };
+		377F41511CA1FAAA00F5A019 /* SwiftNDNTouchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377F41501CA1FAAA00F5A019 /* SwiftNDNTouchTests.swift */; };
+		377F415A1CA1FC9E00F5A019 /* AsyncTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738120A1AA5431900D8627F /* AsyncTransport.swift */; };
+		377F415B1CA1FC9E00F5A019 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEE1AA1558A0007BF12 /* Buffer.swift */; };
+		377F415C1CA1FC9E00F5A019 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812171AA6ED2C00D8627F /* Data.swift */; };
+		377F415D1CA1FC9E00F5A019 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121F1AA9532E00D8627F /* Face.swift */; };
+		377F415E1CA1FC9E00F5A019 /* Interest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725C0A1AA28DAD0007BF12 /* Interest.swift */; };
+		377F415F1CA1FC9E00F5A019 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78411AABB134005DD246 /* LinkedList.swift */; };
+		377F41601CA1FC9E00F5A019 /* Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEF1AA1558A0007BF12 /* Name.swift */; };
+		377F41611CA1FC9E00F5A019 /* NFDManagementProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */; };
+		377F41621CA1FC9E00F5A019 /* Tlv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BF01AA1558A0007BF12 /* Tlv.swift */; };
+		377F41641CA1FCB700F5A019 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3738120D1AA5495800D8627F /* GCDAsyncSocket.m */; };
+		377F41651CA1FCE000F5A019 /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3738120C1AA5495800D8627F /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		377F41661CA1FCFE00F5A019 /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121D1AA8352900D8627F /* KeyChain.swift */; };
+		377F41681CA1FE0800F5A019 /* AsyncTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738120A1AA5431900D8627F /* AsyncTransport.swift */; };
+		377F41691CA1FE0800F5A019 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEE1AA1558A0007BF12 /* Buffer.swift */; };
+		377F416A1CA1FE0800F5A019 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373812171AA6ED2C00D8627F /* Data.swift */; };
+		377F416B1CA1FE0800F5A019 /* Face.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3738121F1AA9532E00D8627F /* Face.swift */; };
+		377F416C1CA1FE0800F5A019 /* Interest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725C0A1AA28DAD0007BF12 /* Interest.swift */; };
+		377F416D1CA1FE0800F5A019 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78411AABB134005DD246 /* LinkedList.swift */; };
+		377F416E1CA1FE0800F5A019 /* Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BEF1AA1558A0007BF12 /* Name.swift */; };
+		377F416F1CA1FE0800F5A019 /* NFDManagementProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */; };
+		377F41701CA1FE0800F5A019 /* Tlv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37725BF01AA1558A0007BF12 /* Tlv.swift */; };
+		377F41711CA1FE0E00F5A019 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3738120D1AA5495800D8627F /* GCDAsyncSocket.m */; };
+		377F41721CA1FE1500F5A019 /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3738120C1AA5495800D8627F /* GCDAsyncSocket.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37A1C7941AAE899B00DFF2B6 /* RibRegisterTestServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A1C7931AAE899B00DFF2B6 /* RibRegisterTestServer.swift */; };
-		37AEE9E81AAE576D00B14A6C /* NFDManagementProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */; };
-		37DE78421AABB134005DD246 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78411AABB134005DD246 /* LinkedList.swift */; };
 		37DE78441AACB0FC005DD246 /* FaceTestServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE78431AACB0FC005DD246 /* FaceTestServer.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,29 +49,42 @@
 			remoteGlobalIDString = 37725BD11AA1556C0007BF12;
 			remoteInfo = SwiftNDN;
 		};
+		377F414D1CA1FAAA00F5A019 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 37725BC91AA1556C0007BF12 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 377F41411CA1FAA900F5A019;
+			remoteInfo = SwiftNDNTouch;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3738120A1AA5431900D8627F /* AsyncTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AsyncTransport.swift; sourceTree = "<group>"; };
+		3738120A1AA5431900D8627F /* AsyncTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AsyncTransport.swift; path = SwiftNDN/AsyncTransport.swift; sourceTree = "<group>"; };
 		3738120C1AA5495800D8627F /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
 		3738120D1AA5495800D8627F /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		373812121AA6423600D8627F /* TlvEchoServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TlvEchoServer.swift; sourceTree = "<group>"; };
-		373812171AA6ED2C00D8627F /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		373812171AA6ED2C00D8627F /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Data.swift; path = SwiftNDN/Data.swift; sourceTree = "<group>"; };
 		3738121D1AA8352900D8627F /* KeyChain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
-		3738121F1AA9532E00D8627F /* Face.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
+		3738121F1AA9532E00D8627F /* Face.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Face.swift; path = SwiftNDN/Face.swift; sourceTree = "<group>"; };
 		37725BD21AA1556C0007BF12 /* SwiftNDN.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNDN.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		37725BD61AA1556C0007BF12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37725BD71AA1556C0007BF12 /* SwiftNDN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftNDN.h; sourceTree = "<group>"; };
 		37725BDD1AA1556C0007BF12 /* SwiftNDNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftNDNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		37725BE31AA1556C0007BF12 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftNDNTests.swift; sourceTree = "<group>"; };
-		37725BEE1AA1558A0007BF12 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
-		37725BEF1AA1558A0007BF12 /* Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Name.swift; sourceTree = "<group>"; };
-		37725BF01AA1558A0007BF12 /* Tlv.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tlv.swift; sourceTree = "<group>"; };
-		37725C0A1AA28DAD0007BF12 /* Interest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interest.swift; sourceTree = "<group>"; };
+		37725BEE1AA1558A0007BF12 /* Buffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Buffer.swift; path = SwiftNDN/Buffer.swift; sourceTree = "<group>"; };
+		37725BEF1AA1558A0007BF12 /* Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Name.swift; path = SwiftNDN/Name.swift; sourceTree = "<group>"; };
+		37725BF01AA1558A0007BF12 /* Tlv.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Tlv.swift; path = SwiftNDN/Tlv.swift; sourceTree = "<group>"; };
+		37725C0A1AA28DAD0007BF12 /* Interest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Interest.swift; path = SwiftNDN/Interest.swift; sourceTree = "<group>"; };
+		377F41421CA1FAA900F5A019 /* SwiftNDNTouch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNDNTouch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		377F41441CA1FAAA00F5A019 /* SwiftNDNTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftNDNTouch.h; sourceTree = "<group>"; };
+		377F41461CA1FAAA00F5A019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		377F414B1CA1FAAA00F5A019 /* SwiftNDNTouchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftNDNTouchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		377F41501CA1FAAA00F5A019 /* SwiftNDNTouchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftNDNTouchTests.swift; sourceTree = "<group>"; };
+		377F41521CA1FAAA00F5A019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37A1C7931AAE899B00DFF2B6 /* RibRegisterTestServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RibRegisterTestServer.swift; sourceTree = "<group>"; };
-		37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NFDManagementProtocol.swift; sourceTree = "<group>"; };
-		37DE78411AABB134005DD246 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
+		37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NFDManagementProtocol.swift; path = SwiftNDN/NFDManagementProtocol.swift; sourceTree = "<group>"; };
+		37DE78411AABB134005DD246 /* LinkedList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LinkedList.swift; path = SwiftNDN/LinkedList.swift; sourceTree = "<group>"; };
 		37DE78431AACB0FC005DD246 /* FaceTestServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FaceTestServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,14 +104,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		377F413E1CA1FAA900F5A019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		377F41481CA1FAAA00F5A019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				377F414C1CA1FAAA00F5A019 /* SwiftNDNTouch.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		37725BC81AA1556C0007BF12 = {
 			isa = PBXGroup;
 			children = (
+				377F41591CA1FC2A00F5A019 /* Common */,
 				37725BD41AA1556C0007BF12 /* SwiftNDN */,
 				37725BE11AA1556C0007BF12 /* SwiftNDNTests */,
+				377F41431CA1FAAA00F5A019 /* SwiftNDNTouch */,
+				377F414F1CA1FAAA00F5A019 /* SwiftNDNTouchTests */,
 				37725BD31AA1556C0007BF12 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -94,6 +139,8 @@
 			children = (
 				37725BD21AA1556C0007BF12 /* SwiftNDN.framework */,
 				37725BDD1AA1556C0007BF12 /* SwiftNDNTests.xctest */,
+				377F41421CA1FAA900F5A019 /* SwiftNDNTouch.framework */,
+				377F414B1CA1FAAA00F5A019 /* SwiftNDNTouchTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,29 +149,20 @@
 			isa = PBXGroup;
 			children = (
 				37725BD71AA1556C0007BF12 /* SwiftNDN.h */,
-				3738120A1AA5431900D8627F /* AsyncTransport.swift */,
-				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
-				373812171AA6ED2C00D8627F /* Data.swift */,
-				3738121F1AA9532E00D8627F /* Face.swift */,
-				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
 				3738121D1AA8352900D8627F /* KeyChain.swift */,
-				37DE78411AABB134005DD246 /* LinkedList.swift */,
-				37725BEF1AA1558A0007BF12 /* Name.swift */,
-				37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */,
-				37725BF01AA1558A0007BF12 /* Tlv.swift */,
-				37725BD51AA1556C0007BF12 /* Supporting Files */,
 			);
 			path = SwiftNDN;
 			sourceTree = "<group>";
 		};
-		37725BD51AA1556C0007BF12 /* Supporting Files */ = {
+		37725BD51AA1556C0007BF12 /* External Libraries */ = {
 			isa = PBXGroup;
 			children = (
 				3738120C1AA5495800D8627F /* GCDAsyncSocket.h */,
 				3738120D1AA5495800D8627F /* GCDAsyncSocket.m */,
 				37725BD61AA1556C0007BF12 /* Info.plist */,
 			);
-			name = "Supporting Files";
+			name = "External Libraries";
+			path = SwiftNDN;
 			sourceTree = "<group>";
 		};
 		37725BE11AA1556C0007BF12 /* SwiftNDNTests */ = {
@@ -134,17 +172,44 @@
 				37A1C7931AAE899B00DFF2B6 /* RibRegisterTestServer.swift */,
 				37725BE41AA1556C0007BF12 /* SwiftNDNTests.swift */,
 				373812121AA6423600D8627F /* TlvEchoServer.swift */,
-				37725BE21AA1556C0007BF12 /* Supporting Files */,
+				37725BE31AA1556C0007BF12 /* Info.plist */,
 			);
 			path = SwiftNDNTests;
 			sourceTree = "<group>";
 		};
-		37725BE21AA1556C0007BF12 /* Supporting Files */ = {
+		377F41431CA1FAAA00F5A019 /* SwiftNDNTouch */ = {
 			isa = PBXGroup;
 			children = (
-				37725BE31AA1556C0007BF12 /* Info.plist */,
+				377F41441CA1FAAA00F5A019 /* SwiftNDNTouch.h */,
+				377F41461CA1FAAA00F5A019 /* Info.plist */,
 			);
-			name = "Supporting Files";
+			path = SwiftNDNTouch;
+			sourceTree = "<group>";
+		};
+		377F414F1CA1FAAA00F5A019 /* SwiftNDNTouchTests */ = {
+			isa = PBXGroup;
+			children = (
+				377F41501CA1FAAA00F5A019 /* SwiftNDNTouchTests.swift */,
+				377F41521CA1FAAA00F5A019 /* Info.plist */,
+			);
+			path = SwiftNDNTouchTests;
+			sourceTree = "<group>";
+		};
+		377F41591CA1FC2A00F5A019 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				3738120A1AA5431900D8627F /* AsyncTransport.swift */,
+				37725BEE1AA1558A0007BF12 /* Buffer.swift */,
+				373812171AA6ED2C00D8627F /* Data.swift */,
+				3738121F1AA9532E00D8627F /* Face.swift */,
+				37725C0A1AA28DAD0007BF12 /* Interest.swift */,
+				37DE78411AABB134005DD246 /* LinkedList.swift */,
+				37725BEF1AA1558A0007BF12 /* Name.swift */,
+				37AEE9E71AAE576D00B14A6C /* NFDManagementProtocol.swift */,
+				37725BF01AA1558A0007BF12 /* Tlv.swift */,
+				37725BD51AA1556C0007BF12 /* External Libraries */,
+			);
+			name = Common;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,8 +219,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3738120F1AA5495800D8627F /* GCDAsyncSocket.h in Headers */,
 				37725BD81AA1556C0007BF12 /* SwiftNDN.h in Headers */,
+				377F41651CA1FCE000F5A019 /* GCDAsyncSocket.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		377F413F1CA1FAA900F5A019 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				377F41451CA1FAAA00F5A019 /* SwiftNDNTouch.h in Headers */,
+				377F41721CA1FE1500F5A019 /* GCDAsyncSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +272,42 @@
 			productReference = 37725BDD1AA1556C0007BF12 /* SwiftNDNTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		377F41411CA1FAA900F5A019 /* SwiftNDNTouch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 377F41571CA1FAAA00F5A019 /* Build configuration list for PBXNativeTarget "SwiftNDNTouch" */;
+			buildPhases = (
+				377F413D1CA1FAA900F5A019 /* Sources */,
+				377F413E1CA1FAA900F5A019 /* Frameworks */,
+				377F413F1CA1FAA900F5A019 /* Headers */,
+				377F41401CA1FAA900F5A019 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwiftNDNTouch;
+			productName = SwiftNDNTouch;
+			productReference = 377F41421CA1FAA900F5A019 /* SwiftNDNTouch.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		377F414A1CA1FAAA00F5A019 /* SwiftNDNTouchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 377F41581CA1FAAA00F5A019 /* Build configuration list for PBXNativeTarget "SwiftNDNTouchTests" */;
+			buildPhases = (
+				377F41471CA1FAAA00F5A019 /* Sources */,
+				377F41481CA1FAAA00F5A019 /* Frameworks */,
+				377F41491CA1FAAA00F5A019 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				377F414E1CA1FAAA00F5A019 /* PBXTargetDependency */,
+			);
+			name = SwiftNDNTouchTests;
+			productName = SwiftNDNTouchTests;
+			productReference = 377F414B1CA1FAAA00F5A019 /* SwiftNDNTouchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -205,7 +315,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftMigration = 0700;
-				LastSwiftUpdateCheck = 0700;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Wentao Shang";
 				TargetAttributes = {
@@ -214,6 +324,14 @@
 					};
 					37725BDC1AA1556C0007BF12 = {
 						CreatedOnToolsVersion = 6.1.1;
+					};
+					377F41411CA1FAA900F5A019 = {
+						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = LN5JNMPGVR;
+					};
+					377F414A1CA1FAAA00F5A019 = {
+						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = LN5JNMPGVR;
 					};
 				};
 			};
@@ -231,6 +349,8 @@
 			targets = (
 				37725BD11AA1556C0007BF12 /* SwiftNDN */,
 				37725BDC1AA1556C0007BF12 /* SwiftNDNTests */,
+				377F41411CA1FAA900F5A019 /* SwiftNDNTouch */,
+				377F414A1CA1FAAA00F5A019 /* SwiftNDNTouchTests */,
 			);
 		};
 /* End PBXProject section */
@@ -250,6 +370,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		377F41401CA1FAA900F5A019 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		377F41491CA1FAAA00F5A019 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -257,17 +391,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				373812181AA6ED2C00D8627F /* Data.swift in Sources */,
-				373812101AA5495800D8627F /* GCDAsyncSocket.m in Sources */,
-				37DE78421AABB134005DD246 /* LinkedList.swift in Sources */,
-				37AEE9E81AAE576D00B14A6C /* NFDManagementProtocol.swift in Sources */,
-				37725BF31AA1558A0007BF12 /* Tlv.swift in Sources */,
-				37725BF21AA1558A0007BF12 /* Name.swift in Sources */,
-				373812201AA9532E00D8627F /* Face.swift in Sources */,
-				37725BF11AA1558A0007BF12 /* Buffer.swift in Sources */,
-				3738121E1AA8352900D8627F /* KeyChain.swift in Sources */,
-				3738120B1AA5431900D8627F /* AsyncTransport.swift in Sources */,
-				37725C0B1AA28DAD0007BF12 /* Interest.swift in Sources */,
+				377F41661CA1FCFE00F5A019 /* KeyChain.swift in Sources */,
+				377F41641CA1FCB700F5A019 /* GCDAsyncSocket.m in Sources */,
+				377F415A1CA1FC9E00F5A019 /* AsyncTransport.swift in Sources */,
+				377F415B1CA1FC9E00F5A019 /* Buffer.swift in Sources */,
+				377F415C1CA1FC9E00F5A019 /* Data.swift in Sources */,
+				377F415D1CA1FC9E00F5A019 /* Face.swift in Sources */,
+				377F415E1CA1FC9E00F5A019 /* Interest.swift in Sources */,
+				377F415F1CA1FC9E00F5A019 /* LinkedList.swift in Sources */,
+				377F41601CA1FC9E00F5A019 /* Name.swift in Sources */,
+				377F41611CA1FC9E00F5A019 /* NFDManagementProtocol.swift in Sources */,
+				377F41621CA1FC9E00F5A019 /* Tlv.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,6 +416,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		377F413D1CA1FAA900F5A019 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				377F41711CA1FE0E00F5A019 /* GCDAsyncSocket.m in Sources */,
+				377F41681CA1FE0800F5A019 /* AsyncTransport.swift in Sources */,
+				377F41691CA1FE0800F5A019 /* Buffer.swift in Sources */,
+				377F416A1CA1FE0800F5A019 /* Data.swift in Sources */,
+				377F416B1CA1FE0800F5A019 /* Face.swift in Sources */,
+				377F416C1CA1FE0800F5A019 /* Interest.swift in Sources */,
+				377F416D1CA1FE0800F5A019 /* LinkedList.swift in Sources */,
+				377F416E1CA1FE0800F5A019 /* Name.swift in Sources */,
+				377F416F1CA1FE0800F5A019 /* NFDManagementProtocol.swift in Sources */,
+				377F41701CA1FE0800F5A019 /* Tlv.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		377F41471CA1FAAA00F5A019 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				377F41511CA1FAAA00F5A019 /* SwiftNDNTouchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -289,6 +448,11 @@
 			isa = PBXTargetDependency;
 			target = 37725BD11AA1556C0007BF12 /* SwiftNDN */;
 			targetProxy = 37725BDF1AA1556C0007BF12 /* PBXContainerItemProxy */;
+		};
+		377F414E1CA1FAAA00F5A019 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 377F41411CA1FAA900F5A019 /* SwiftNDNTouch */;
+			targetProxy = 377F414D1CA1FAAA00F5A019 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -387,6 +551,7 @@
 				INFOPLIST_FILE = SwiftNDN/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "UCLA.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -407,6 +572,7 @@
 				INFOPLIST_FILE = SwiftNDN/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "UCLA.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -453,6 +619,86 @@
 			};
 			name = Release;
 		};
+		377F41531CA1FAAA00F5A019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = SwiftNDNTouch/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = UCLA.SwiftNDNTouch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		377F41541CA1FAAA00F5A019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = SwiftNDNTouch/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = UCLA.SwiftNDNTouch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		377F41551CA1FAAA00F5A019 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = SwiftNDNTouchTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = UCLA.SwiftNDNTouchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		377F41561CA1FAAA00F5A019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = SwiftNDNTouchTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = UCLA.SwiftNDNTouchTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -482,6 +728,22 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		377F41571CA1FAAA00F5A019 /* Build configuration list for PBXNativeTarget "SwiftNDNTouch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				377F41531CA1FAAA00F5A019 /* Debug */,
+				377F41541CA1FAAA00F5A019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		377F41581CA1FAAA00F5A019 /* Build configuration list for PBXNativeTarget "SwiftNDNTouchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				377F41551CA1FAAA00F5A019 /* Debug */,
+				377F41561CA1FAAA00F5A019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
